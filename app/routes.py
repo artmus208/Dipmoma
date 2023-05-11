@@ -8,10 +8,11 @@ import plotly.graph_objects as go
 
 
 from . import logger
-from flask import redirect, render_template, url_for, jsonify, flash, request
+from flask import redirect, render_template, url_for, jsonify, flash, request, g
 from .forms import UploadForm, IdentForm
 from . import app
 from . import data_collect
+from .ident_methods import LSM
 
 BASIDIR = os.path.abspath(os.path.dirname(__file__))
 
@@ -33,6 +34,9 @@ def index():
                           title="Исходная переходная характеристика объекта",
                           xaxis_title="t, c",
                           yaxis_title="h(t)")
+        g.fig = fig
+        g.x = x
+        g.y = y
         graphJSON = json.dumps(fig, cls=plotly.utils.PlotlyJSONEncoder)
         dir_path = os.path.abspath(os.path.dirname(file_path))
         logger.info(dir_path)
@@ -46,6 +50,22 @@ def index():
 @app.route('/system-ident', methods=['GET', 'POST'])
 def system_ident():
     form = IdentForm(request.form)
+    fig: go.Figure = getattr(g, 'fig', None)
+    x = getattr(g, 'x', None)
+    y = getattr(g, 'y', None)
+    if fig is None or x is None or y is None:
+        logger.warning(f'/system-ident: fig is None or x is None or y is None')
+        return redirect(url_for('index'))
+    # TODO:
+    # [ ]: Надо добавить выбор степени идентификации
+
+    LSM(x, y, 2)
+
+    fig.update_layout(
+        title="Результат идентификации:"
+    )
+    fig.add_trace(go.Scatter())
+    graphJSON = json.dumps(fig, cls=plotly.utils.PlotlyJSONEncoder)
     logger.info(form.methods.data)
     return "Страница результата идентификации"
 

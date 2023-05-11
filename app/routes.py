@@ -9,7 +9,7 @@ import plotly.graph_objects as go
 
 from . import logger
 from flask import redirect, render_template, url_for, jsonify, flash, request
-from .forms import UploadForm
+from .forms import UploadForm, IdentForm
 from . import app
 from . import data_collect
 
@@ -18,10 +18,12 @@ BASIDIR = os.path.abspath(os.path.dirname(__file__))
 @app.route('/', methods=["GET", "POST"])
 def index():
     form = UploadForm()
+    ident_form = IdentForm()
+    ident_form.methods.choices=[(1, "МНК")]
     fig = go.Figure()
 
     file_path = None
-    if request.method == "POST":
+    if form.validate_on_submit():
         filename = data_collect.save(form.file_upload.data)
         file_path = data_collect.path(filename)
         logger.info(file_path)
@@ -37,8 +39,17 @@ def index():
         dir_path += "\\test.JSON"
         with open(dir_path, 'w') as file:
             file.write(f'var graphs = {graphJSON};')
-        return render_template('index.html', form=form, file_url=file_path)
+        return render_template('index.html', ident_form=ident_form, form=form, file_url=file_path)
     return render_template('index.html', form=form, file_url=file_path)
+
+
+@app.route('/system-ident', methods=['GET', 'POST'])
+def system_ident():
+    form = IdentForm(request.form)
+    logger.info(form.methods.data)
+    return "Страница результата идентификации"
+
+
 
 @app.route('/check-plotly', methods=['GET', 'POST'])
 def check_plotly():

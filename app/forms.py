@@ -1,4 +1,4 @@
-from wtforms import SubmitField
+from wtforms import SubmitField, SelectField
 from flask_wtf import FlaskForm
 from flask_wtf.file import FileField, FileRequired, FileAllowed
 from markupsafe import Markup
@@ -11,3 +11,7 @@ class UploadForm(FlaskForm):
         ],
     )
     submit = SubmitField('Загрузить')
+
+class IdentForm(FlaskForm):
+    methods = SelectField()
+    submit = SubmitField('Запуск')

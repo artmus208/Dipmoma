@@ -20,37 +20,25 @@
         </header>
     
     <h1>Загрузка данных переходного процесса</h1>
-    <form id="file-upload-form"
-          method="POST" 
-          enctype="multipart/form-data" 
-          action="{{ url_for('index') }}"
-          >
+    <form method="POST" enctype="multipart/form-data" style="display: block;">
         {{ form.hidden_tag() }}
-        {{ form.file_upload }}
-        <label for="file_upload" id="file-drag">
-            Select a file to upload
-            <br />OR
-            <br />Drag a file into this box
-            
-            <br /><br /><span id="file-upload-btn" class="button">Add a file</span>
-        </label>
-        
-
-        <progress id="file-progress" value="0">
-            <span>0</span>%
-        </progress>
-
-        <output for="file-upload" id="messages"></output>
+        {{ form.file_upload() }}
         {{ form.submit }}
     </form>
-    <script src="../static/scripts/upload_file.js"></script>
-    {% for error in form.file_upload.errors %}
-        <span style="color: red;">{{ error }}</span>
-    {% endfor %}
+        {% for error in form.data.errors %}
+            <span style="color: red;">{{ error }}</span>
+        {% endfor %}
         {% if file_url %}
             <br>
-            <div id='chart' class='chart'></div>
-            <script> Plotly.plot('chart', graphs, {}); </script>
+            <div class='chart'>
+                <div id='chart'></div>
+                <script> Plotly.plot('chart', graphs, {}); </script>
+                <form method="POST" action="{{ url_for('system_ident') }}">
+                    {{ ident_form.hidden_tag() }}
+                    {{ ident_form.methods }}
+                    {{ ident_form.submit }}
+                </form>
+            </div>
         {% endif %}
 
         {% block content %}

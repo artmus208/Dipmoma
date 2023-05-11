@@ -4,26 +4,57 @@
         <meta charset="UTF-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <link rel="icon" href="{{ url_for('static', filename='logo.svg') }}" sizes="any" type="image/svg+xml">
+        <link rel="icon" href="{{ url_for('static', filename='icon.svg') }}" sizes="any" type="image/svg+xml">
+        <link rel='stylesheet' href="../static/style/main.css">
         <title>Веб-приложение для индентификации динамических систем</title>
         <script src='../static/scripts/plotly-latest.min.js'></script>
-        <script src='../static/data/uploads/test.JSON'></script>
-        <script> Plotly.plot('chart', graphs, {}); </script>
+        <script src='../static/data/uploads/data/test.JSON'></script>
     </head>
     <body>
+        <header>
+            <a href="/">
+                <img class="logo"
+                     src="{{ url_for('static', filename='icon.svg') }}"
+                     width="68">
+            </a>
+        </header>
+    
     <h1>Загрузка данных переходного процесса</h1>
-    <form method="POST" enctype="multipart/form-data" style="display: block;">
+    <form id="file-upload-form"
+          method="POST" 
+          enctype="multipart/form-data" 
+          action="{{ url_for('index') }}"
+          >
         {{ form.hidden_tag() }}
-        {{ form.data }}
-        {% for error in form.data.errors %}
-            <span style="color: red;">{{ error }}</span>
-        {% endfor %}
+        {{ form.file_upload }}
+        <label for="file_upload" id="file-drag">
+            Select a file to upload
+            <br />OR
+            <br />Drag a file into this box
+            
+            <br /><br /><span id="file-upload-btn" class="button">Add a file</span>
+        </label>
+        
+
+        <progress id="file-progress" value="0">
+            <span>0</span>%
+        </progress>
+
+        <output for="file-upload" id="messages"></output>
         {{ form.submit }}
     </form>
+    <script src="../static/scripts/upload_file.js"></script>
+    {% for error in form.file_upload.errors %}
+        <span style="color: red;">{{ error }}</span>
+    {% endfor %}
         {% if file_url %}
-            {{ file_url }}
             <br>
-            <div id='chart' class='chart' style="height:100%; width:100%;"></div>
+            <div id='chart' class='chart'></div>
+            <script> Plotly.plot('chart', graphs, {}); </script>
         {% endif %}
+
+        {% block content %}
+        {% endblock content %}
+
     </body>
 </html>

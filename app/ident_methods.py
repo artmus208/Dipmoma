@@ -1,7 +1,7 @@
 import numpy as np
 
-def LSM(t, y, degree):
-    N = len(t)
+def LSM(x, y, degree):
+    N = len(x)
     phi = np.zeros((N-1,2*degree))
     for i in range(N-1):
         for j in range(degree):

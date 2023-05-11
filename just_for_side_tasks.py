@@ -1,28 +1,12 @@
-time = []
-value = []
-
-x = []
-y = []
-# with open("time.txt") as f:
-#     for line in f:
-#         time.append(float(line))
-
-# with open("value.txt") as f:
-#     for line in f:
-#         value.append(float(line))
-
-# with open("time_value.txt", "w+") as f:
-#     for t, v in zip(time, value):
-#         f.write(f"{t}, {v}\n")
-
-with open("time_value.txt") as f:
-    for line in f:
-        x_, y_ = line.split(',')
-        x.append(x_)
-        y.append(y_)
-
-for x_, y_ in zip(x, y):
-    print(f"{float(x_)}, {float(y_)}")
-
-
+from os import path
+p =  "D:\\semester8\\Diploma\\app\\static/data/uploads\\data\\time_value_3.txt"
+abs_path = path.abspath(p)
+base_name = path.basename(p)
+dirname = path.dirname(p)
+splited_path = path.split(p)
+print(f"p: {p}")
+print(f"abs_path: {abs_path}")
+print(f"basename: {base_name}")
+print(f"dirname: {dirname}")
+print(f"splited_path:\n{splited_path}")
 

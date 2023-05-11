@@ -1,9 +1,4 @@
-from . import logger
-from flask import redirect, render_template, url_for, jsonify, flash, request
-from .forms import UploadForm
-from . import app
-from . import data_collect
-
+import os
 import json
 import plotly
 import numpy as np
@@ -11,36 +6,36 @@ from plotly.subplots import make_subplots
 import plotly.io as pio
 import plotly.graph_objects as go
 
+
+from . import logger
+from flask import redirect, render_template, url_for, jsonify, flash, request
+from .forms import UploadForm
+from . import app
+from . import data_collect
+
+BASIDIR = os.path.abspath(os.path.dirname(__file__))
+
 @app.route('/', methods=["GET", "POST"])
 def index():
     form = UploadForm()
-    x = []
-    y = []
-    graphJSON = None
-    file_url = None
+    fig = go.Figure()
+
+    file_path = None
     if form.validate_on_submit():
         filename = data_collect.save(form.data.data)
-        file_url = data_collect.url(filename)
-    else:
-        file_url = None
-    try:
-        with open("../uploads/data/time_value_5.txt") as f:
-            for line in f:
-                x_, y_ = line.split(',')
-                x.append(float(x_))
-                y.append(float(y_))
-    except Exception as e:
-        logger.warning(f"index: {e}")
-        redirect(url_for("index"))
-    fig = make_subplots(rows=1, cols=1, subplot_titles=("Переходная характеристика"), 
-                        shared_xaxes=True, vertical_spacing=0.1)
-    fig.append_trace(go.Scatter(x = x, y = y, name = 'Переходной процесс'), row=1, col=1)
-    fig.update_traces(hovertemplate=None)
-    layout={'hovermode': 'x', "height":800}
-    fig.update_layout(layout)
-    graphJSON = pio.to_json(fig) 
-
-    return render_template('index.html', form=form, file_url=file_url, chart=graphJSON)
+        file_path = data_collect.path(filename)
+        x, y = np.loadtxt(file_path, delimiter=',', unpack=True)
+        fig.add_trace(go.Scatter(x=x, y=y, name="Исходная переходная характеристика объекта"))
+        fig.update_layout(margin=dict(l=5, r=5, t=40, b=5),
+                          title="Исходная переходная характеристика объекта",
+                          xaxis_title="t, c",
+                          yaxis_title="h(t)")
+        graphJSON = json.dumps(fig, cls=plotly.utils.PlotlyJSONEncoder)
+        file_path += "/test.JSON"
+        with open(file_path, 'w') as file:
+            file.write(f'var graphs = {graphJSON};')
+        return render_template('index.html', form=form, file_url=file_path)
+    return render_template('index.html', form=form, file_url=file_path)
 
 @app.route('/check-plotly', methods=['GET', 'POST'])
 def check_plotly():

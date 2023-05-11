@@ -1,42 +1,29 @@
 <!DOCTYPE html>
 <html lang="ru">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="icon" href="{{ url_for('static', filename='logo.svg') }}" sizes="any" type="image/svg+xml">
-    <title>Веб-приложение для индентификации динамических систем</title>
-</head>
-<body>
-
-<h1>Загрузка данных переходного процесса</h1>
-<form method="POST" enctype="multipart/form-data" style="display: block;">
+    <head>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="icon" href="{{ url_for('static', filename='logo.svg') }}" sizes="any" type="image/svg+xml">
+        <title>Веб-приложение для индентификации динамических систем</title>
+        <script src='../static/scripts/plotly-latest.min.js'></script>
+        <script src='../static/data/uploads/test.JSON'></script>
+        <script> Plotly.plot('chart', graphs, {}); </script>
+    </head>
+    <body>
+    <h1>Загрузка данных переходного процесса</h1>
+    <form method="POST" enctype="multipart/form-data" style="display: block;">
         {{ form.hidden_tag() }}
         {{ form.data }}
         {% for error in form.data.errors %}
             <span style="color: red;">{{ error }}</span>
         {% endfor %}
         {{ form.submit }}
-</form>
-
-{% if file_url %}
-{{ file_url }}
-<br>
-{{url_for('_uploads.uploaded_file', setname="data", filename="time.txt")}}
-{% endif %}
-
-    {% if chart %}
-            <p>График отображается</p>
+    </form>
+        {% if file_url %}
+            {{ file_url }}
+            <br>
             <div id='chart' class='chart' style="height:100%; width:100%;"></div>
-            <script src='../static/scripts/plotly-latest.min.js'></script>
-            <script type='text/javascript'>
-                var graphs = {{ chart|safe }};
-                Plotly.plot('chart', graphs, {});
-            </script>
-        {% else %}
-            <p>Тут будет график!</p>
-    {% endif %}
-
-
-</body>
+        {% endif %}
+    </body>
 </html>

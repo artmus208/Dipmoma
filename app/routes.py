@@ -5,7 +5,7 @@ import numpy as np
 from plotly.subplots import make_subplots
 import plotly.io as pio
 import plotly.graph_objects as go
-
+import control as co
 
 from . import logger
 from flask import redirect, render_template, url_for, jsonify, flash, request, g, session
@@ -33,46 +33,42 @@ def index():
                             title="Исходная переходная характеристика объекта",
                             xaxis_title="t, c",
                             yaxis_title="h(t)")
-            dir_path = os.path.abspath(os.path.dirname(file_path))
             graphJSON = json.dumps(fig, cls=plotly.utils.PlotlyJSONEncoder)
-            dir_path += "\\test.JSON" # тут нужно имя пользователя .JSON или id объекта
             session["x"] = x.tolist()
             session["y"] = y.tolist()
             g.x = x.tolist()
-            logger.debug(f"session['y'][0]: {session['y'][0]}")
-            logger.debug(f"session['x'][0]: {session['x'][0]}")
-            with open(dir_path, 'w') as file:
-                file.write(f'var graphs = {graphJSON};')
-            return render_template('index.html', ident_form=ident_form, form=form, file_url=file_path)
+            return render_template('index.html', 
+                                   ident_form=ident_form, 
+                                   form=form, 
+                                   graph_json=graphJSON)
         return render_template('index.html', form=form, file_url=file_path)
     except Exception as e:
         logger.error(f"index: {e}")
         return redirect(url_for("index"))
 
-
+# TIPS:
+# [ ]: все проверки передачи данных можно делать в декораторе
+# [ ]: работу с перехватом эксепшинов можно перевести в декораторы
 @app.route('/system-ident', methods=['GET', 'POST'])
 def system_ident():
-    try:
-        form = IdentForm(request.form)
-        x, y = session.get("x", None), session.get("y", None)
-        fig: go.Figure()
-        fig.add_trace(go.Scatter(x=x, y=y, name="Исходная переходная характеристика объекта"))
-        if x is None or y is None:
-            logger.warning(f'/system-ident: x is None or y is None')
-            return redirect(url_for('index'))
-        # TODO:
-        # [ ]: Надо добавить выбор степени идентификации
-        # LSM(x, y, form.degree.data)
-        fig.update_layout(
-            title="Результат идентификации:"
-        )
-        fig.add_trace(go.Scatter())
-        graphJSON = json.dumps(fig, cls=plotly.utils.PlotlyJSONEncoder)
-        logger.info(form.methods.data)
-        return "Страница результата идентификации"
-    except Exception as e:
-        logger.error(f"/system-ident: {e}")
-        return redirect(url_for("index"))
+    form = IdentForm(request.form)
+    x, y = session.get("x", None), session.get("y", None)
+    if x is None or y is None:
+        logger.warning(f'/system-ident: x is None or y is None')
+        return redirect(url_for('index'))
+    fig = go.Figure()
+    fig.add_trace(go.Scatter(x=x, y=y, name="Исходная ПХ"))
+    num, den = LSM(x, y, form.degree.data)
+    dpf = co.tf(num, den, x[1]-x[0])
+    x_dpf, y_dpf = co.step_response(dpf, T = 1)
+    fig.add_trace(go.Scatter(x=x_dpf, y=y_dpf, name="Идент. МНК"))
+    fig.update_layout(
+        title="Идентифицировались",
+        xaxis_title="t, c",
+    )
+    graphJSON = json.dumps(fig, cls=plotly.utils.PlotlyJSONEncoder)
+    return render_template('system_ident.html', graph_json=graphJSON)
+
 
 
 

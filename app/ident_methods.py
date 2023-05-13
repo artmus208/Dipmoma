@@ -1,7 +1,6 @@
 import numpy as np
 
 def LSM(t, y, degree):
-
     N = len(t)
     phi = np.zeros((N-1,2*degree))
     for i in range(N-1):
@@ -22,4 +21,9 @@ def LSM(t, y, degree):
     # TODO:
     # [ ]: Распарсить массив коэффициентов x на коэфф. числ. и знамен.
     x = np.linalg.solve(A,B)
-    return x
+    x = x.tolist()
+    x.insert(0, 1)
+    x.insert(degree+1, 0)
+    num = x[degree+1:] 
+    den = x[:degree+1]
+    return num, den

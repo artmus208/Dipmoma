@@ -9,14 +9,20 @@ class UploadForm(FlaskForm):
         validators=[FileRequired('Файл пустой!'),
                     FileAllowed(data_collect, "Только текстовый файл (.txt)")
         ],
+        render_kw={
+            "accesskey": "f"
+        }
     )
-    submit = SubmitField('Загрузить')
+    submit = SubmitField('Загрузить',
+        render_kw={
+            "accesskey": "d"
+        })
 
 class IdentForm(FlaskForm):
     methods = SelectField()
     degree = IntegerField(render_kw={
         "min": 1,
         "placeholder":u"Степень полинома знаменателя",
-        "size": 100
+        "size": 100,
         })
     submit = SubmitField('Запуск')

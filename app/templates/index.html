@@ -36,6 +36,7 @@
                 <form method="POST" action="{{ url_for('system_ident') }}">
                     {{ ident_form.hidden_tag() }}
                     {{ ident_form.methods }}
+                    {{ ident_form.degree }}
                     {{ ident_form.submit }}
                 </form>
             </div>

@@ -1,4 +1,4 @@
-from wtforms import SubmitField, SelectField
+from wtforms import SubmitField, SelectField, IntegerField
 from flask_wtf import FlaskForm
 from flask_wtf.file import FileField, FileRequired, FileAllowed
 from markupsafe import Markup
@@ -14,4 +14,9 @@ class UploadForm(FlaskForm):
 
 class IdentForm(FlaskForm):
     methods = SelectField()
+    degree = IntegerField(render_kw={
+        "min": 1,
+        "placeholder":u"Степень полинома знаменателя",
+        "size": 100
+        })
     submit = SubmitField('Запуск')

@@ -31,16 +31,15 @@ def tex2svg(formula, fontsize=2, dpi=300):
         """
         fig = plt.figure(figsize=(100, 100))
         fig.text(0, 0, r'{}'.format(formula), fontsize=fontsize)
-
         output = BytesIO()
         fig.savefig(output, dpi=dpi, transparent=True, format='svg', bbox_inches='tight', pad_inches=0.0)
         plt.close(fig)
         output.seek(0)
-        return output.read()
+        data_str = output.read().decode("utf-8")
+        return data_str
 
 svg_data = tex2svg(formula=r'$x = \frac{-10.58 z^4 - 21.15 z^3 - 31.72 z^2 - 2.3 z + 0.5}{67.5 z^5 - 105.8 z^4 + 63.75 z^3 - 9.625 z^2 - 5.75 z + 1}\quad dt = 0.06$', fontsize=50)
 with open("app/templates/svg_test.svg", "w") as f:
-    svg_data_str = svg_data.decode("utf-8")
-    f.write(svg_data_str)
+    f.write(svg_data)
 
 

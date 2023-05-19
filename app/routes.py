@@ -14,7 +14,9 @@ from . import app
 from . import data_collect
 from .ident_methods import LSM
 
-BASIDIR = os.path.abspath(os.path.dirname(__file__))
+from .utilities import tex2svg
+
+BASEDIR = os.path.abspath(os.path.dirname(__file__))
 
 @app.route('/', methods=["GET", "POST"])
 def index():
@@ -67,6 +69,12 @@ def system_ident():
         xaxis_title="t, c",
     )
     graphJSON = json.dumps(fig, cls=plotly.utils.PlotlyJSONEncoder)
+
+    # LaTex to SVG procedure
+    svg_str = tex2svg(dpf._repr_latex_()[1:-1])
+    with open(BASEDIR+'/static/img/tf.svg', 'w') as f:
+        f.write(svg_str)
+
     return render_template('system_ident.html', graph_json=graphJSON)
 
 

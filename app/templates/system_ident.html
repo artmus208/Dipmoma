@@ -15,5 +15,6 @@
     var graphs = {{ graph_json|safe }}
     Plotly.plot('chart', graphs, {}); 
   </script>  
+  <img style="margin-left: 250px" src=" {{ url_for('static', filename='img/tf.svg') }}" alt="Некоторый код LaTeX">
 </body>
 </html>

@@ -7,3 +7,16 @@ test.txt
 side_work/
 docs/referens/OtherDiplomas/дипломек
 *.lnk
+
+*.pyc
+
+
+instance/
+
+.pytest_cache/
+.coverage
+htmlcov/
+
+dist/
+build/
+*.egg-info/

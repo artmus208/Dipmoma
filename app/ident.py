@@ -8,9 +8,12 @@ import plotly.graph_objects as go
 import control as co
 
 from . import logger
-from flask import redirect, render_template, url_for, jsonify, flash, request, g, session
-from .forms import UploadForm, IdentForm
-from . import app
+from flask import(
+    redirect, render_template, url_for, jsonify, flash, request, g, session, Blueprint
+)
+from .forms.ident_form import IdentForm
+from .forms.upload_form import UploadForm
+
 from . import data_collect
 from .ident_methods import LSM
 
@@ -18,7 +21,9 @@ from .utilities import tex2svg
 
 BASEDIR = os.path.abspath(os.path.dirname(__file__))
 
-@app.route('/', methods=["GET", "POST"])
+bp = Blueprint('ident', __name__)
+
+@bp.route('/', methods=["GET", "POST"])
 def index():
     try:
         form = UploadForm()
@@ -51,7 +56,7 @@ def index():
 # TIPS:
 # [ ]: все проверки передачи данных можно делать в декораторе
 # [ ]: работу с перехватом эксепшинов можно перевести в декораторы
-@app.route('/system-ident', methods=['GET', 'POST'])
+@bp.route('/system-ident', methods=['GET', 'POST'])
 def system_ident():
     form = IdentForm(request.form)
     x, y = session.get("x", None), session.get("y", None)
@@ -80,6 +85,6 @@ def system_ident():
 
 
 
-@app.route('/check-plotly', methods=['GET', 'POST'])
+@bp.route('/check-plotly', methods=['GET', 'POST'])
 def check_plotly():
     x, y = np.loadtxt("time_value.txt", delimiter=',', unpack=True)

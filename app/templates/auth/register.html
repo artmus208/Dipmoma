@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+
+{% block header %}
+  <h1>{% block title %}Регистрация{% endblock %}</h1>
+{% endblock %}
+
+{% block content %}
+  {% from "_formhelpers.html" import render_field %}
+  <form method="post" action="{{ url_for('auth.register') }}">
+    <dl>
+      {{ form.csrf_token }}
+      {{ render_field(form.first_name) }}
+      {{ render_field(form.second_name) }}
+      {{ render_field(form.mail) }}
+      {{ render_field(form.password) }}
+      {{ render_field(form.confirm) }}
+      {{ render_field(form.position) }}
+      {{ render_field(form.other) }}
+      {{ render_field(form.submit) }}
+    </dl>
+  </form>
+{% endblock %}

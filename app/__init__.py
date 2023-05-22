@@ -31,32 +31,19 @@ def create_app(test_config=None):
     
     from . import db
     db.init_app(app)
-
-    from . import auth
-    app.register_blueprint(auth.bp)
-    from . import ident
-    app.register_blueprint(ident.bp)
-    app.add_url_rule('/', endpoint='index')
     return app
 
-def create_logger():
-    logger = logging.getLogger(__name__)
-    logger.setLevel(logging.DEBUG)
-    formatter = logging.Formatter(
-        '%(asctime)s:%(name)s:%(levelname)s:%(message)s'
-    )
-    file_handler = logging.FileHandler('iDentWebApp.log')
-    file_handler.setFormatter(formatter)
-    logger.addHandler(file_handler)
-    return logger
 
 app = create_app()
-logger = create_logger()
+
+from . import auth
+app.register_blueprint(auth.bp)
+from . import ident
+app.register_blueprint(ident.bp)
+app.add_url_rule('/', endpoint='index')
 def create_upload_set():
     data_collector = UploadSet('data', TEXT)
     configure_uploads(app, data_collector)
     patch_request_class(app, None)
     return data_collector
-
-data_collect = create_upload_set()
-
+data_collector = create_upload_set()

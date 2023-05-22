@@ -7,7 +7,6 @@ import plotly.io as pio
 import plotly.graph_objects as go
 import control as co
 
-from . import logger
 from flask import(
     redirect, render_template, url_for, jsonify, flash, request, g, session, Blueprint
 )
@@ -50,7 +49,7 @@ def index():
                                    graph_json=graphJSON)
         return render_template('index.html', form=form, file_url=file_path)
     except Exception as e:
-        logger.error(f"index: {e}")
+        flash("Exception on index")
         return redirect(url_for("index"))
 
 # TIPS:
@@ -61,7 +60,7 @@ def system_ident():
     form = IdentForm(request.form)
     x, y = session.get("x", None), session.get("y", None)
     if x is None or y is None:
-        logger.warning(f'/system-ident: x is None or y is None')
+        flash(f'/system-ident: x is None or y is None')
         return redirect(url_for('index'))
     fig = go.Figure()
     fig.add_trace(go.Scatter(x=x, y=y, name="Исходная ПХ"))

@@ -7,14 +7,14 @@ from wtforms.validators import (
     EqualTo, DataRequired, ValidationError
 )
 from flask_wtf.file import FileField, FileRequired, FileAllowed
-from app import data_collect
+from forms import data_collector
 
 
 class UploadForm(FlaskForm):
     
     file_upload = FileField(
         validators=[FileRequired('Файл пустой!'),
-                    FileAllowed(data_collect, "Только текстовый файл (.txt)")
+                    FileAllowed(data_collector, "Только текстовый файл (.txt)")
         ],
         render_kw={
             "accesskey": "f"

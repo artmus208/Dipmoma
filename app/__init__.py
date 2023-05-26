@@ -41,7 +41,10 @@ dictConfig(
 
 logger = logging.getLogger('extra')
 
+db = None
+
 def create_app(test_config=None):
+    global db
     """The Application factory"""
     app = Flask(__name__, instance_relative_config=True)    
     if test_config is None:
@@ -54,9 +57,11 @@ def create_app(test_config=None):
     except OSError:
         pass
     
-    db = SQLAlchemy()
-    db.init_app(app)
+    _db = SQLAlchemy()
+    _db.init_app(app)
 
+    db = _db
+    
     from . import auth
     app.register_blueprint(auth.bp)
     
@@ -67,3 +72,4 @@ def create_app(test_config=None):
     app.add_url_rule('/hello', endpoint='auth.hello')
     return app
 
+app = create_app()

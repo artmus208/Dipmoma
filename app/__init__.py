@@ -43,9 +43,9 @@ logger = logging.getLogger('extra')
 
 def create_app(test_config=None):
     """The Application factory"""
-    app = Flask(__name__, instance_relative_config=True)
+    app = Flask(__name__, instance_relative_config=True)    
     if test_config is None:
-        app.config.from_pyfile("config.py", silent=True)
+        app.config.from_pyfile("config.py", silent=False)
     else:
         app.config.from_mapping(test_config)
     
@@ -53,13 +53,17 @@ def create_app(test_config=None):
         os.makedirs(app.instance_path)
     except OSError:
         pass
-
+    
     db = SQLAlchemy()
     db.init_app(app)
 
     from . import auth
     app.register_blueprint(auth.bp)
+    
+    from . import ident
+    app.register_blueprint(ident.bp)
 
-    app.add_url_rule('/', endpoint='index')
+    app.add_url_rule('/', endpoint='ident.index')
+    app.add_url_rule('/hello', endpoint='auth.hello')
     return app
 

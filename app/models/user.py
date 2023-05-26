@@ -5,16 +5,32 @@ from sqlalchemy.sql import func
 from sqlalchemy.types import (
     Integer, DateTime, String
 )
+from sqlalchemy.orm import relationship
 
+from . import execute, select
+class Qualification(db.Model, MyBaseClass):
+    id = Column(Integer, primary_key=True)
+    qualification = Column(String(200), nullable=False)
+    user = relationship("Users", backref='Qualification', lazy='dynamic')
+    
+    def __init__(self, id=None, qual=""):
+        if id: self.id = id
+        self.qualification = qual
+
+    @classmethod
+    def get_ids_names(cls):
+        return [(q.id, q.qualification) for q in execute(select(cls)).scalars().all()]
+        
+    
 # TODO:
 # [ ]: Добавить роли 
 class Users(db.Model, MyBaseClass):
     id = Column(Integer, primary_key=True)
     first_name = Column(String(150), nullable=False)
     second_name = Column(String(150), nullable=False)
-    email = Column(String(150), nullable=False)
+    email = Column(String(150), unique=True, nullable=False)
     password = Column(String(200), nullable=False)
-    qualification = Column(String(200), nullable=False)
+    qualification_id = db.Column(db.Integer, db.ForeignKey('qualification.id'))
     time_created = db.Column(db.DateTime(timezone=True), server_default=func.now())
     time_updated = db.Column(db.DateTime(timezone=True), onupdate=func.now())
     
@@ -24,7 +40,7 @@ class Users(db.Model, MyBaseClass):
                  second_name:str="-", 
                  email:str="-@mail.com", 
                  password:str='nopass', 
-                 qualification:str='-',
+                 qualification_id:str='-',
                  time_created=None,
                  time_updated=None):
         if id: self.id = id
@@ -32,7 +48,7 @@ class Users(db.Model, MyBaseClass):
         self.second_name = second_name
         self.email = email
         self.password = password
-        self.qualification = qualification
+        self.qualification_id = qualification_id
         if time_created: self.time_created = time_created
         if time_updated: self.time_updated = time_updated
         

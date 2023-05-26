@@ -32,14 +32,24 @@ class RegisterForm(FlaskForm):
             DataRequired("Подтвердите ввод пароля")
         ]
     )
-    position = SelectField(
-        "Чем вы занимаетесь?",    
+    qual = SelectField(
+        "Ваша квалификация",
+        choices=[(-1, "Квалификация:")],
+        default='Не указано',
+        validators=[DataRequired("Укажите квалификацию")]
     )
-    def validate_position(form, field):
-        if field.data == -1:
+    def validate_qual(form, field):
+        if int(field.data) == -1:
             raise ValidationError(
-                "Выберите вид деятельности"
+                "Укажите квалификацию"
             )
     # Специалист по идентификации, студент, инженер, преподаватель
     other = StringField("Другое...", default='')
     submit = SubmitField("Регистрация")
+    
+    def __init__(self, *args, **kwargs):
+        super(RegisterForm, self).__init__(*args, **kwargs)
+        quals = kwargs.get("quals", [])
+        b = quals+[(len(quals)-1, "Другое...")]
+        self.qual.choices+=b
+        

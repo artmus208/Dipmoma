@@ -2,11 +2,12 @@
 {% from '_formhelpers.html' import render_field with context %}
 
 {% block header %}
-  <h1>{% block title %}Register{% endblock %}</h1>
+  <h1>{% block title %}Регистрация{% endblock %}</h1>
 {% endblock %}
 
 {% block content %}
   <form method="post" action="{{url_for('auth.register')}}">
+    {{ form.hidden_tag() }}
     {% for field in form %}
       {% if not loop.last %}
         {{render_field(field)}}

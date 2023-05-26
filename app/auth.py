@@ -5,28 +5,24 @@ from flask import (
 from flask import current_app as app
 from . import logger
 
+from .forms.log_form import LoginForm
+from .forms.reg_form import RegisterForm
+
 
 bp = Blueprint("auth", __name__, url_prefix='/auth')
 
-@bp.route('/hello')
-def hello():
-    logger.info("An info message", extra={"func":"hello"})
-    return 'Hello, World!'
+# TODO:
+# [ ]: checkout about register https://proproprogs.ru/flask/registraciya-polzovateley-i-shifrovanie-paroley
+@bp.route('/register', methods=('GET', 'POST'))
+def register():
+    form = RegisterForm()
+    return render_template('auth/register.html', form=form)
 
-@bp.route('/show-time')
-def show_time():
-    logger.info(str(app.import_name), extra={"func":"show_time"})
-    return redirect(url_for('auth.hello'))
-
-
+# TODO:
+# [ ]: checkout about login https://proproprogs.ru/flask/avtorizaciya-polzovateley-na-sayte-cherez-flask-login
 @bp.route('/login', methods=('GET', 'POST'))
 def login():
     return render_template('auth/login.html')
-
-
-@bp.route('/register', methods=('GET', 'POST'))
-def register():
-    return render_template('auth/register.html')
 
 @bp.route('/logout')
 def logout():
@@ -35,11 +31,17 @@ def logout():
 
 @bp.before_app_request
 def load_logged_in_user():
-    user_id = session.get('user_id')
+    # user_id = session.get('user_id')
 
-    if user_id is None:
-        g.user = None
-    else:
-        g.user = get_db().execute(
-            'SELECT * FROM user WHERE id = ?', (user_id,)
-        ).fetchone()
+    # if user_id is None:
+    #     g.user = None
+    # else:
+    #     g.user = get_db().execute(
+    #         'SELECT * FROM user WHERE id = ?', (user_id,)
+    #     ).fetchone()
+    pass
+
+@bp.route('/hello')
+def hello():
+    logger.info("Hello")
+    return 'Hello, World!'

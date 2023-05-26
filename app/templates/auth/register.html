@@ -1,15 +1,16 @@
 {% extends 'base.html' %}
+{% from '_formhelpers.html' import render_field with context %}
 
 {% block header %}
   <h1>{% block title %}Register{% endblock %}</h1>
 {% endblock %}
 
 {% block content %}
-  <form method="post">
-    <label for="username">Username</label>
-    <input name="username" id="username" required>
-    <label for="password">Password</label>
-    <input type="password" name="password" id="password" required>
-    <input type="submit" value="Register">
+  <form method="post" action="{{url_for('auth.register')}}">
+    {% for field in form %}
+      {% if not loop.last %}
+        {{render_field(field)}}
+      {% endif %}
+    {% endfor %}
   </form>
 {% endblock %}

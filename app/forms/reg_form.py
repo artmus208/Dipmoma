@@ -11,7 +11,7 @@ class RegisterForm(FlaskForm):
         "Ваше имя",
         validators=[DataRequired("Введите имя")]
     )    
-    second_name = SelectField(
+    second_name = StringField(
         "Ваша фамилия",
         validators=[DataRequired("Введите фамилию")]
     )

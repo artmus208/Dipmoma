@@ -9,7 +9,7 @@ dictConfig(
         "version": 1,
         "formatters": {
             "default": {
-                "format": "[%(asctime)s] [%(levelname)s in %(module)s] '%(message)s' in func: %(func)s",
+                "format": "[%(asctime)s] [%(levelname)s in %(module)s.%(funcName)s:%(lineno)d] '%(message)s'",
                 "datefmt": "%d.%m.%y %H:%M:%S",
             },
             "minimum": {
@@ -68,8 +68,12 @@ def create_app(test_config=None):
     from . import ident
     app.register_blueprint(ident.bp)
 
+    from . import dev_cli
+    app.register_blueprint(dev_cli.bp)
     app.add_url_rule('/', endpoint='ident.index')
     app.add_url_rule('/hello', endpoint='auth.hello')
+    
+    from .models import user
     return app
 
 app = create_app()

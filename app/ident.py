@@ -4,10 +4,12 @@ from flask import (
 )
 from flask import current_app as app
 from . import logger
-
+from .utils.decorators import login_required
 bp = Blueprint("ident", __name__, url_prefix='/ident')
 
+
 @bp.route('/')
+@login_required
 def index():
     return render_template("ident/index.html")
 

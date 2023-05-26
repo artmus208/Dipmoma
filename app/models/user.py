@@ -53,7 +53,13 @@ class Users(db.Model, MyBaseClass):
         if time_updated: self.time_updated = time_updated
         
     def __repr__(self) -> str:
-        return f"{self.id},{self.first_name},{self.second_name},{self.email},{self.password},{self.qualification},{self.time_created},{self.time_updated}"
+        return f"{self.id},{self.first_name},{self.second_name},{self.email},{self.password},{self.qualification_id},{self.time_created},{self.time_updated}"
+    
+    @classmethod
+    def get_by_email(cls, email:str):
+        stmt = select(cls).where(cls.email==email)
+        return execute(stmt).scalar()
+        
 
 
 

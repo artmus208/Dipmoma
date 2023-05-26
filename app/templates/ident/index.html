@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+
+{% block header %}
+  <h1>{% block title %}Идентификация динамических систем{% endblock title %}</h1>
+  {% if g.user %}
+    Привет, {{g.user}}!
+  {% endif %}
+{% endblock header %}
+
+{% block content %}
+  Тут такое будет!!!
+{% endblock content %}

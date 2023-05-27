@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Flexbox в CSS3</title>
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        padding: 0;
+        margin: 0;
+        font-family: verdana, arial, sans-serif;
+      }
+      body {
+        display: flex;
+        padding: 1em;
+        flex-direction: column;
+      }
+      .item {
+        background-color: #455a64;
+        color: #fff;
+        font-size: 1.1em;
+        padding: 1em;
+      }
+      .item:nth-child(even) {
+        background-color: #607d8b;
+      }
+      @media screen and (min-width: 600px) {
+        body {
+          flex-direction: row;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="item">
+      <h2>Что такое Lorem Ipsum?</h2>
+      <p>
+        Lorem Ipsum - это текст-"рыба", часто используемый в
+        печати и вэб-дизайне. Lorem Ipsum является
+        стандартной "рыбой" для текстов на латинице с начала
+        XVI века...
+      </p>
+    </div>
+    <div class="item">
+      <h2>Откуда он появился?</h2>
+      <p>
+        Многие думают, что Lorem Ipsum - взятый с потолка
+        псевдо-латинский набор слов, но это не совсем так.
+        Его корни уходят в один фрагмент классической латыни
+        45 года н.э...
+      </p>
+    </div>
+  </body>
+</html>

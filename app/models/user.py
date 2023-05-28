@@ -1,3 +1,4 @@
+from sqlalchemy import ForeignKey
 from app import db, logger
 from app.models import MyBaseClass
 from sqlalchemy.schema import Column
@@ -8,10 +9,10 @@ from sqlalchemy.types import (
 from sqlalchemy.orm import relationship
 
 from . import execute, select
-class Qualification(db.Model, MyBaseClass):
+class Qualifications(db.Model, MyBaseClass):
     id = Column(Integer, primary_key=True)
     qualification = Column(String(200), nullable=False)
-    user = relationship("Users", backref='Qualification', lazy='dynamic')
+    user = relationship("Users", backref='Qualifications', lazy='dynamic')
     
     def __init__(self, id=None, qual=""):
         if id: self.id = id
@@ -20,19 +21,50 @@ class Qualification(db.Model, MyBaseClass):
     @classmethod
     def get_ids_names(cls):
         return [(q.id, q.qualification) for q in execute(select(cls)).scalars().all()]
-        
     
-# TODO:
-# [ ]: Добавить роли 
+    
+    # def load_from_file(self, filename):
+    #     res = list()
+    #     try:
+    #         with open(filename, 'r', encoding='UTF8') as f:
+    #             for line in f:
+    #                 for c_data, c in zip(line.split(','), self.__table__.columns):
+    #                     new = self.__init__()
+    #                     setattr(new, c.name, c_data) 
+    #                 res.append(new)
+    #         return res
+    #     except Exception as e:
+    #         logger.error('Fail load from file')
+    #         print('Fail load from file', e, sep='\n')
+    
+
+   
+
+class Roles(db.Model, MyBaseClass):
+    id = Column(Integer, primary_key=True)
+    role = Column(String(50), nullable=False)
+    user = relationship("Users", backref='Roles', lazy='dynamic')
+
+    def __init__(self, id=None, role=''):
+        if id: self.id = id
+        self.role = role
+
+    @classmethod 
+    def get_ids_roles(cls):
+        return [(q.id, q.role) for q in execute(select(cls)).scalars().all()]
+
+
+
 class Users(db.Model, MyBaseClass):
     id = Column(Integer, primary_key=True)
     first_name = Column(String(150), nullable=False)
     second_name = Column(String(150), nullable=False)
     email = Column(String(150), unique=True, nullable=False)
     password = Column(String(200), nullable=False)
-    qualification_id = db.Column(db.Integer, db.ForeignKey('qualification.id'))
-    time_created = db.Column(db.DateTime(timezone=True), server_default=func.now())
-    time_updated = db.Column(db.DateTime(timezone=True), onupdate=func.now())
+    qualification_id = Column(Integer, ForeignKey('qualifications.id'))
+    role_id = Column(Integer, ForeignKey('roles.id'))
+    time_created = Column(db.DateTime(timezone=True), server_default=func.now())
+    time_updated = Column(db.DateTime(timezone=True), onupdate=func.now())
     
     def __init__(self,
                  id: int=None,

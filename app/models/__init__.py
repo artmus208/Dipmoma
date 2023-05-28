@@ -27,5 +27,24 @@ class MyBaseClass:
         except Exception:
             db.session.rollback()
             raise
+
+    def as_dict_name(self):
+        return {c.name: getattr(self, c.name) for c in self.__table__.columns}
+    
+
+    # TIPS: Возможная оптимизация кода!
+    # [ ]: Вместо того, чтобы каждый раз открывать поток файла, 
+    #      можно создать метод, который получает на вход список этих объектов
+    #      и сохраняет их разом
+    # [ ]: Сравнить показатели такого подхода с существующим
+    def save_to_file(self, filename):
+        attr = self.as_dict_name()
+        try:
+            with open(filename, 'a', encoding='UTF8') as f:
+                f.write(",".join(map(str, attr.values()))+"\n")
+        except:
+            with open(filename, 'w+', encoding='UTF8') as f:
+                f.write(",".join(map(str, attr.values())))
+    
         
         

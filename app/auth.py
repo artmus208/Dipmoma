@@ -9,7 +9,7 @@ from . import logger
 
 from .forms.log_form import LoginForm
 from .forms.reg_form import RegisterForm
-from .models.user import Users, Qualification
+from .models.user import Users, Qualifications
 
 
 bp = Blueprint("auth", __name__, url_prefix='/auth')
@@ -18,7 +18,7 @@ bp = Blueprint("auth", __name__, url_prefix='/auth')
 # [x]: checkout about register https://proproprogs.ru/flask/registraciya-polzovateley-i-shifrovanie-paroley
 @bp.route('/register', methods=('GET', 'POST'))
 def register():
-    form:RegisterForm = RegisterForm(quals=Qualification.get_ids_names())
+    form:RegisterForm = RegisterForm(quals=Qualifications.get_ids_names())
     if request.method == "POST":
         if form.validate_on_submit():
             newbee = Users(

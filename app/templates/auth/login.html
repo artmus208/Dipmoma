@@ -1,17 +1,35 @@
-{% extends 'base.html' %}
 {% from '_formhelpers.html' import render_field with context %}
+<!DOCTYPE html>
+<html lang="ru">
 
-{% block header %}
-  <h1>{% block title %}Авторизация{% endblock %}</h1>
-{% endblock %}
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link type="style">
+  <link rel="stylesheet" href="{{ url_for('static', filename='style/login.css') }}">
+  <title>Вход</title>
+</head>
 
-{% block content %}
-  <form method="post">
+<body>
+  <form class="form" method="post" action="{{ url_for('auth.login') }}">
+
+    <h1 class="form__title">Вход</h1>
+    
+    <div class="form__group">
+      <input class="form__input" id="mail" name="mail" required="" type="email" placeholder=" ">
+      <label class="form__label" for="mail">Электронная почта</label>
+    </div>
+    
+    <div class="form__group">
+      <input class="form__input" id="password" name="password" required="" type="password" placeholder=" ">
+      <label class="form__label" for="password">Пароль</label>
+    </div>
+
+    <input class="form__button" id="submit" name="submit" type="submit" value="Войти">
     {{ form.hidden_tag() }}
-    {% for field in form %}
-      {% if not loop.last %}
-        {{render_field(field)}}
-      {% endif %}
-    {% endfor %}
+
   </form>
-{% endblock %}
+</body>
+
+</html>

@@ -36,7 +36,7 @@ def register():
                 return render_template('auth/register.html', form=form)    
             
             flash('Успешная регистрация')
-            return redirect(url_for('auth.register'))
+            return redirect(url_for('auth.login'))
         
         else:
             flash("Ошибка при регистрации")

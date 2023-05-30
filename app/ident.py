@@ -9,7 +9,8 @@ bp = Blueprint("ident", __name__, url_prefix='/ident')
 
 
 @bp.route('/')
-@login_required
 def index():
-    return render_template("ident/index.html")
+    return render_template("ident/new_index.html")
+
+
 

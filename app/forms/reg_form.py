@@ -9,15 +9,24 @@ from wtforms.validators import (
 class RegisterForm(FlaskForm):
     first_name = StringField(
         "Ваше имя",
-        validators=[DataRequired("Введите имя")]
+        validators=[DataRequired("Введите имя")],
+        render_kw={
+            "placeholder": " "
+        }
     )    
     second_name = StringField(
         "Ваша фамилия",
-        validators=[DataRequired("Введите фамилию")]
+        validators=[DataRequired("Введите фамилию")],
+        render_kw={
+            "placeholder": " "
+        }
     )
     mail = EmailField(
         "Электронная почта",
-        validators=[DataRequired("Введите почту")]
+        validators=[DataRequired("Введите почту")],
+        render_kw={
+            "placeholder": " "
+        }
     )
     password = PasswordField(
         "Пароль", 
@@ -25,12 +34,18 @@ class RegisterForm(FlaskForm):
             EqualTo('confirm', 'Пароли должны совпасть'),
             DataRequired("Введите пароль")
         ],
+        render_kw={
+            "placeholder": " "
+        }
     )
     confirm = PasswordField(
         'Повторите пароль',
         validators=[
             DataRequired("Подтвердите ввод пароля")
-        ]
+        ],
+        render_kw={
+            "placeholder": " "
+        }
     )
     qual = SelectField(
         "Ваша квалификация",

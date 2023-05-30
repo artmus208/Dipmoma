@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="{{ url_for('static', filename='style/index.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='style/reset.css') }}">
+  <link rel="shortcut icon" type="image/svg" href="{{ url_for('static', filename='icon.svg') }}">
+  <title>Идентификация</title>
+</head>
+
+<body class="flex-container">
+  <header class="header">
+    <a href="/">
+      <img class="logo" src="{{ url_for('static', filename='icon.svg') }}" alt="Логотип">
+    </a>
+
+    <nav>
+      <ul>
+        <li><a href="/etc">etc</a></li>
+        <li><a href="/reset">reset</a></li>
+        <li><a href="/logout">logout</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <div class="main-container">
+    <aside class="left-sidebar">
+      <!-- Форма отправки файла -->
+      <form class="form load-form" action="" method="post">
+        <label for="load-data">Выбрать файл для загрузки данных</label>
+        <input type="file" value="File" id="load-data">
+
+        <label for="load-data-btn"></label>
+        <input type="submit" value="Загрузить" id="load-data-btn">
+      </form>
+
+      <!-- Форма для верификационных данных -->
+      <form class="form verification-form" action="" method="post">
+        <label for="verify-data">Файл для загрузки верификационных данных</label>
+        <input type="file" value="File" id="verify-data">
+
+        <label for="verify-data-btn"></label>
+        <input type="submit" value="Load" id="verify-data-btn">
+      </form>
+    </aside>
+
+    <main>
+      <div class="plot">
+        <p>*График загруженных данных*</p>
+      </div>
+
+      <div class="control-container">
+        <form class="form ident-form" method="post">
+          <label for="tf-pow">Максимальная степень ПФ</label>
+          <input type="number" name="tf-pow" id="tf-pow">
+
+          <label for="methods">Метод</label>
+          <select name="methods" id="methods">
+            <option value="-1"> -- Выберите метод --</option>
+            <option value="1">МНК</option>
+            <option value="2">ВИМ</option>
+            <option value="3">Градиентный</option>
+          </select>
+
+          <label for="ident-btn"></label>
+          <input type="submit" value="Идентифицировать">
+        </form>
+
+        <div class="tf-img">
+          <p>*картинка ПФ*</p>
+        </div>
+        
+      </div>
+    </main>
+
+    <aside class="right-sidebar">
+      <div class="model-info-btns">
+        <label for="zero-poles-btn"></label>
+        <input type="button" value="Нули и Полюса" id="zero-poles-btn">
+
+        <label for="bode-btn"></label>
+        <input type="button" value="Диаграмма Боде" id="bode-btn">
+      </div>
+
+      <div class="export-btn">
+        <label for="export-btn"></label>
+        <input type="button" value="Экспорт модели" id="export-btn">
+      </div>
+    </aside>
+  </div>
+
+  <footer class="footer">
+    <span class="status-bar">Статус</span>
+    <span class="accuracy">Точность</span>
+  </footer>
+
+</body>
+
+</html>

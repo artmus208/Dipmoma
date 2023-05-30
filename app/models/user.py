@@ -62,7 +62,7 @@ class Users(db.Model, MyBaseClass):
     email = Column(String(150), unique=True, nullable=False)
     password = Column(String(200), nullable=False)
     qualification_id = Column(Integer, ForeignKey('qualifications.id'))
-    role_id = Column(Integer, ForeignKey('roles.id'))
+    role_id = Column(Integer, ForeignKey('roles.id'), default=1)
     time_created = Column(db.DateTime(timezone=True), server_default=func.now())
     time_updated = Column(db.DateTime(timezone=True), onupdate=func.now())
     

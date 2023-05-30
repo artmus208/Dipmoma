@@ -1,0 +1,108 @@
+input,
+select {
+    padding: 0px;
+    width: 300px;
+    border: 1px solid black;
+}
+
+body.flex-container {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    border: 2px dashed black;
+}
+
+.logo {
+    width: 50px;
+    height: 50px;
+}
+
+header.header {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    border: 1px dashed gray;
+    padding: 15px;
+}
+
+nav>ul {
+    display: flex;
+    flex-direction: row;
+    border: 1px dashed pink;
+    width: 300px;
+    justify-content: space-around;
+    align-items: center;
+}
+
+.main-container {
+    display: flex;
+    border: 1px dotted purple;
+    height: 580px;
+}
+
+main {
+    flex: 1;
+    padding: 30px;
+    display: flex;
+    flex-direction: column;
+}
+
+.left-sidebar {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    border: 1px dotted tomato;
+    padding-top: 20px;
+    padding-bottom: 20px;
+}
+
+.right-sidebar {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    border: 1px dotted palevioletred;
+}
+
+.form {
+    display: flex;
+    flex-direction: column;
+}
+
+span {
+    display: block;
+}
+
+footer.footer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.plot {
+    border: 3px solid green;
+    height: 60%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.model-info-btns {
+    display: flex;
+    flex-direction: column;
+}
+
+.control-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 30%;
+}
+
+.tf-img {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: 1px dashed darkblue;
+    width: 40%;
+    height: 30%;
+}

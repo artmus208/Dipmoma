@@ -1,13 +1,16 @@
 import functools
 import os
+import numpy as np
 from flask import (
-    Blueprint, flash, g, make_response, redirect, render_template, request, session, url_for
+    Blueprint, flash, g, jsonify, make_response, redirect, render_template, request, session, url_for
 )
 from flask import current_app as app
 from werkzeug.utils import secure_filename
 
 from . import logger
 from .utils.decorators import login_required
+from .utils.identify_it import IdentifyIt
+
 bp = Blueprint("ident", __name__, url_prefix='/ident')
 
 
@@ -19,12 +22,23 @@ def index():
 @bp.route('/handler', methods=("GET", "POST"))
 def methods():
     data = request.get_json()
-    degree = data['degree']
+    degree = int(data['degree'])
     method_id = int(data["method_id"])
-    session["degree"] = degree
-    session["method_id"] = method_id
-    response = make_response('', 200)
-    return response
+    # Тут нужно обработать входные данные
+    x, y = np.loadtxt(session["last_filepath"], delimiter=',', unpack=True)
+    logger.info(f"x[-1]:{x.tolist()[-1]}; y[-1]:{y.tolist()[-1]}")
+    ident = IdentifyIt(x, y, degree, method_id)
+    y_m = ident.y_m
+    x_m = ident.x_m
+    logger.info(f"x_m[-1]:{x_m[-1]}; y_m[-1]:{y_m[-1]}")
+    resp_data = {
+        'x1':x.tolist(),
+        'y1':y.tolist(),
+        'x2':x_m.tolist(),
+        'y2':y_m.tolist(),
+    }
+    
+    return jsonify(resp_data)
 
 
 @bp.route('/u', methods=['POST'])
@@ -43,7 +57,6 @@ def upload_file():
         filename = secure_filename(file.filename)
         file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
         session['last_filepath'] = os.path.join(app.config['UPLOAD_FOLDER'], filename)
-        logger.info(f'Last upload filepath:\n{session["last_filepath"]}')
 
         flash(f'Файл {filename} успешно загружен!')
     return redirect(url_for('ident.index'))

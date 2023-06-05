@@ -19,15 +19,36 @@ document.getElementById('mainForm').addEventListener('submit', function(event) {
       },
       body: JSON.stringify(data)
     })
-    .then(function(response) {
-      if (response.ok) {
-        console.log('Данные успешно отправлены на сервер');
-      } else {
-        console.log('Ошибка отправки данных на сервер');
-      }
+    .then(response => response.json())
+    .then(data => {
+        var trace1 = {
+            x: data.x1,
+            y: data.y1,
+            mode: 'lines',
+            name: 'First Trace'
+        };
+
+        var trace2 = {
+            x: data.x2,
+            y: data.y2,
+            mode: 'lines',
+            name: 'Second Trace'
+        };
+
+        var layout = {
+            title: 'Two Traces Plot',
+            xaxis: {
+                title: 'x-axis',
+            },
+            yaxis: {
+                title: 'y-axis',
+            },
+        };
+
+        var plotData = [trace1, trace2];
+        Plotly.newPlot('plot', plotData, layout);
     })
-    .catch(function(error) {
-      console.log('Произошла ошибка:', error);
-    });
-  });
+    .catch(error => console.log(error));
+});
+
   

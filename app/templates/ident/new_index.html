@@ -9,6 +9,7 @@
   <link rel="stylesheet" href="{{ url_for('static', filename='style/reset.css') }}">
   <link rel="shortcut icon" type="image/svg" href="{{ url_for('static', filename='icon.svg') }}">
   <script defer src="{{ url_for('static', filename='scripts/script.js') }}"></script>
+  <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
   <title>Идентификация</title>
 </head>
 
@@ -30,7 +31,8 @@
   <div class="main-container">
     <aside class="left-sidebar">
       <!-- Форма отправки файла -->
-      <form class="form load-form" action="{{ url_for('ident.upload_file') }}" method="post" enctype="multipart/form-data">
+      <form class="form load-form" action="{{ url_for('ident.upload_file') }}" method="post"
+        enctype="multipart/form-data">
         <label for="load-data">Выбрать файл для загрузки данных</label>
         <input type="file" name="file" value="File" id="load-data">
 
@@ -49,8 +51,10 @@
     </aside>
 
     <main>
-      <div class="plot">
-        <p>*График загруженных данных*</p>
+
+      <div id="plot" class="plot">
+        <!-- Может не вывестись график -->
+        <!-- <script src="{{ url_for('static', filename='scripts/script.js') }}"></script> -->
       </div>
 
       <div class="control-container">
@@ -94,15 +98,15 @@
   </div>
 
   <footer class="footer">
-  <!-- Flash - сообщения от сервера Flask -->
+    <!-- Flash - сообщения от сервера Flask -->
     {% with messages = get_flashed_messages(with_categories=true) %}
-      {% if messages %}
-      <ul class=flashes>
-        {% for category, message in messages %}
-          <li class="{{ category }}">{{ message }}</li>
-        {% endfor %}
-      </ul>
-      {% endif %}
+    {% if messages %}
+    <ul class=flashes>
+      {% for category, message in messages %}
+      <li class="{{ category }}">{{ message }}</li>
+      {% endfor %}
+    </ul>
+    {% endif %}
     {% endwith %}
 
     <!-- <span class="accuracy">Точность</span> -->

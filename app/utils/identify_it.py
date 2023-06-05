@@ -12,7 +12,7 @@ import control
 import numpy as np
 import scipy.linalg as linalg
 
-from grad import Grad
+from .grad import Grad
 
 class Methods(Enum):
     lsm = 1,
@@ -85,7 +85,10 @@ class IdentifyIt:
 
     @property
     def y_m(self):
-        self.x_m, self._y_m = control.step_response(self.model, np.linspace(self.x[0], self.x[-1], len(self.x)))
+        if self.iscont:
+            self.x_m, self._y_m = control.step_response(self.model, np.linspace(self.x[0], self.x[-1], len(self.x)))
+        else:
+            self.x_m, self._y_m = control.step_response(self.model, self.x[-1])
         return self._y_m
 
     @property

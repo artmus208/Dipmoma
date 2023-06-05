@@ -38,7 +38,7 @@ nav>ul {
 .main-container {
     display: flex;
     border: 1px dotted purple;
-    height: 580px;
+    height: 80%;
 }
 
 main {
@@ -81,7 +81,7 @@ footer.footer {
 
 .plot {
     border: 3px solid green;
-    height: 60%;
+    height: 80%;
     display: flex;
     justify-content: center;
     align-items: center;

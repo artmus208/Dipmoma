@@ -9,7 +9,8 @@ body.flex-container {
     display: flex;
     flex-direction: column;
     height: 100vh;
-    border: 2px dashed black;
+    border: 0px dashed black;
+    margin: 0px;
 }
 
 .logo {
@@ -105,4 +106,7 @@ footer.footer {
     border: 1px dashed darkblue;
     width: 40%;
     height: 30%;
+}
+.flashes {
+    color: blue;
 }

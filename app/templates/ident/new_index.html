@@ -8,6 +8,7 @@
   <link rel="stylesheet" href="{{ url_for('static', filename='style/index.css') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='style/reset.css') }}">
   <link rel="shortcut icon" type="image/svg" href="{{ url_for('static', filename='icon.svg') }}">
+  <script defer src="{{ url_for('static', filename='scripts/script.js') }}"></script>
   <title>Идентификация</title>
 </head>
 
@@ -29,9 +30,9 @@
   <div class="main-container">
     <aside class="left-sidebar">
       <!-- Форма отправки файла -->
-      <form class="form load-form" action="" method="post">
+      <form class="form load-form" action="{{ url_for('ident.upload_file') }}" method="post" enctype="multipart/form-data">
         <label for="load-data">Выбрать файл для загрузки данных</label>
-        <input type="file" value="File" id="load-data">
+        <input type="file" name="file" value="File" id="load-data">
 
         <label for="load-data-btn"></label>
         <input type="submit" value="Загрузить" id="load-data-btn">
@@ -53,7 +54,7 @@
       </div>
 
       <div class="control-container">
-        <form class="form ident-form" method="post">
+        <form id='mainForm' class="form ident-form">
           <label for="tf-pow">Максимальная степень ПФ</label>
           <input type="number" name="tf-pow" id="tf-pow">
 
@@ -72,7 +73,7 @@
         <div class="tf-img">
           <p>*картинка ПФ*</p>
         </div>
-        
+
       </div>
     </main>
 
@@ -93,8 +94,18 @@
   </div>
 
   <footer class="footer">
-    <span class="status-bar">Статус</span>
-    <span class="accuracy">Точность</span>
+  <!-- Flash - сообщения от сервера Flask -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+      <ul class=flashes>
+        {% for category, message in messages %}
+          <li class="{{ category }}">{{ message }}</li>
+        {% endfor %}
+      </ul>
+      {% endif %}
+    {% endwith %}
+
+    <!-- <span class="accuracy">Точность</span> -->
   </footer>
 
 </body>

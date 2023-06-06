@@ -13,7 +13,7 @@ dictConfig(
                 "datefmt": "%d.%m.%y %H:%M:%S",
             },
             "minimum": {
-                "format": f"%(message)s",
+                "format": "%(message)s",
             }
         },
         "handlers": {
@@ -28,7 +28,6 @@ dictConfig(
                 "formatter": "default",
             },
         },
-        "root": {"level": "DEBUG", "handlers": ["console"]},
         "loggers": {
             "extra": {
                 "level": "DEBUG",

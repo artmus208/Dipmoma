@@ -21,23 +21,27 @@ def index():
 
 @bp.route('/handler', methods=("GET", "POST"))
 def methods():
+    # TIPS Сделать это потом декоратором:
+    if not session.get('last_filepath', False):
+        # TIPS Лучше конечно на клиенте тоже проверять загрузку файла
+        flash('Файл не загружен')
+        return redirect(url_for('ident.index'))
     data = request.get_json()
     degree = int(data['degree'])
     method_id = int(data["method_id"])
     # Тут нужно обработать входные данные
     x, y = np.loadtxt(session["last_filepath"], delimiter=',', unpack=True)
-    logger.info(f"x[-1]:{x.tolist()[-1]}; y[-1]:{y.tolist()[-1]}")
     ident = IdentifyIt(x, y, degree, method_id)
     y_m = ident.y_m
     x_m = ident.x_m
-    logger.info(f"x_m[-1]:{x_m[-1]}; y_m[-1]:{y_m[-1]}")
     resp_data = {
         'x1':x.tolist(),
         'y1':y.tolist(),
         'x2':x_m.tolist(),
         'y2':y_m.tolist(),
+        'error': float(ident.error),
+        'tf_formula': ident.model._repr_latex_(),
     }
-    
     return jsonify(resp_data)
 
 

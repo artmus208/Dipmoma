@@ -93,8 +93,12 @@ class IdentifyIt:
 
     @property
     def error(self):
+        # Ниже код, нужен для выравнивания длин двух векторов
+        y_m, y = self.y_m, self.y
+        min_len = min(len(y_m), len(y))
+        y_m, y = y_m[:min_len], y[:min_len]
         if isinstance(self.y, np.ndarray) and isinstance(self.y_m, np.ndarray):
-            return np.sum((self.y_m - self.y)**2)
+            return np.sum((y_m - y)**2)
         raise TypeError("Type mismath")
 
     def __repr__(self) -> str:

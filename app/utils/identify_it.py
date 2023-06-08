@@ -4,7 +4,6 @@
 # TODO:
 # [x]: Подготовить методы для тестирования
 # [x]: Протестировать методы
-# [ ]: Подготовить JSON-графика для Plotly
 
 
 from enum import Enum
@@ -12,7 +11,7 @@ import control
 import numpy as np
 import scipy.linalg as linalg
 
-from .grad import Grad
+from grad import Grad
 
 class Methods(Enum):
     lsm = 1,
@@ -104,9 +103,10 @@ class IdentifyIt:
     def __repr__(self) -> str:
         return f"num:{self.num}\ndenum:{self.den}\nerror:{self.error}\nIs cont.:{self.iscont}"
 
-    def __init__(self, x:list, y:list, degree:int, method:int):
+    def __init__(self, x:list, y:list, degree:int, method:int, u:list=None):
         self.x = x
         self.y = y
+        self.u = u
         self.degree = degree
         self.method = method
         self.iscont = True
@@ -115,18 +115,17 @@ class IdentifyIt:
 
     def run_method(self):
         print('Running method...')
-        match self.method:
-            case 1:
-                print('LSM is runing...')
-                self.lsm(self.x, self.y, self.degree)
-            case 2:
-                print('VIM is runing...')
-                self.vim(self.x, self.y, self.degree)
-            case 3:
-                print('GRAD is runing...')
-                self.grad(self.x, self.y, self.degree)
-            case _:
-                raise ValueError("Wrong Method Choosen")
+        if self.method == 1:
+            print('LSM is runing...')
+            self.lsm(self.x, self.y, self.degree, self.u)
+        elif self.method == 2:
+            print('VIM is runing...')
+            self.vim(self.x, self.y, self.degree)
+        elif self.method == 3:
+            print('GRAD is runing...')
+            self.grad(self.x, self.y, self.degree)
+        else:
+            raise ValueError("Wrong Method Choosen")
 
     def load_xy(self, file_path):
         """Загрузка экспериментальных данных из файла"""
@@ -140,7 +139,8 @@ class IdentifyIt:
         return res
     
 
-    def lsm(self, t, y, degree):
+    def lsm(self, t, y, degree, u=None):
+        if not u: u = np.ones_like(y)
         N = len(t)
         phi = np.zeros((N-1,2*degree))
         for i in range(N-1):
@@ -150,11 +150,11 @@ class IdentifyIt:
                 else:
                     phi[i][j] = -y[i-j]
         for i in range(N-1):
-            for j in range(degree,2*degree):
+            for j in range(degree, 2*degree):
                 if i + degree - j <= 0:
                     phi[i][j] = 0
                 else:
-                    phi[i][j] = 1
+                    phi[i][j] = u[i]
         Y = y[1:N]
         B = np.dot(phi.T,Y)
         A = np.dot(phi.T,phi)

@@ -43,6 +43,8 @@ logger = logging.getLogger('extra')
 
 db = None
 
+
+# Нет секретного ключа!
 def create_app(test_config=None):
     global db
     """The Application factory"""

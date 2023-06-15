@@ -2,12 +2,20 @@
 
 // });
 
+var selectElement = document.getElementById('methods');
+var degreeElement = document.getElementById('tf-pow');
+var formPlacer = document.getElementById("tf_formula");
+var ident_btn = document.getElementById("ident-btn");
+
 function createInitInput(i, placeholder) {
     var numInput = document.createElement('input');
     numInput.placeholder = placeholder + i;
+    numInput.id = placeholder + i;
     numInput.type = "number";
     numInput.min = "0";
     numInput.step = "1e-3";
+    numInput.required = true; 
+    numInput.style.padding = "2px";
     return numInput;
 }
 
@@ -20,7 +28,6 @@ function createInitParamform(degree) {
 
     var hr = document.createElement('hr');
 
-
     var denumerator = document.createElement('div');
     denumerator.className = "denumerator";
 
@@ -29,55 +36,78 @@ function createInitParamform(degree) {
     submit_btn.className = "submit-btn-tf-init";
     submit_btn.value = "Сохранить";
 
-
-    for (var i = 0; i <= degree; i++) {
+    for (var i=1; i <= degree; i++){
         var numInput = createInitInput(i, "b");
-
-        var denumInput = createInitInput(i, "a");
-
-
-
         if (i == degree) {
             numInput.placeholder = 'hуст';
-        } else {
+        }else {
             numInput.style.marginRight = "5px";
-            denumInput.style.marginRight = "5px";
-
         }
         numerator.appendChild(numInput);
+    }
+
+    for (var i = 0; i <= degree; i++) {        
+        var denumInput = createInitInput(i, "a");
+        if (i != degree) {
+            denumInput.style.marginRight = "5px";
+        }
         denumerator.appendChild(denumInput);
     }
 
+    var label = document.createElement('p');
+    label.innerHTML = "Начальные параметры:"
+    label.style.marginBottom = "5px";
+    form.appendChild(label);
     form.appendChild(numerator);
     form.appendChild(hr);
     form.appendChild(denumerator);
     form.appendChild(submit_btn);
 
+
+////// Обработчик подтверждения формы ///////////////
+    form.addEventListener('submit', function(event) {
+        event.preventDefault();
+        ident_btn.toggleAttribute('disabled');
+        var buff = 0;
+        var num_arr = [];
+        var den_arr = [];
+
+        for (var i = 1; i <= degree; i++){
+            buff = document.getElementById('b'+ i);
+            buff.disabled = true;
+            num_arr.push(buff.value);
+        }
+
+        for (var i = 0; i <= degree; i++){
+            buff = document.getElementById('a'+ i);
+            buff.disabled = true;
+            den_arr.push(buff.value);
+        }
+        console.log(num_arr);
+        console.log(den_arr);
+
+    });
     return form;
 }
 
-
-var selectElement = document.getElementById('methods');
-var degreeElement = document.getElementById('tf-pow');
-var formPlacer = document.getElementById("tf_formula");
 // Добавляем обработчик события
 degreeElement.addEventListener('change', function (event) {
     var selectedOption = selectElement.value;
-    
     if (selectedOption == "3") {
         // Если выбран градиентный метод, надо сгенерировать форму
-        initForm = createInitParamform(degreeElement.value);
-        formPlacer.innerHTML = initForm.outerHTML;
+        formPlacer.innerHTML = '';
+        var initForm = createInitParamform(degreeElement.value);
+        formPlacer.appendChild(initForm);
+        ident_btn.toggleAttribute('disabled');
+
     }; 
 });
 
 selectElement.addEventListener('change', function (event) {
     var selectedOption = event.target.value;
-    var saveInner = formPlacer.innerHTML;
     if (selectedOption != "3") {
         // Если не выбран градиентный метод, надо убрать форму
         formPlacer.innerHTML = "";
-    }else{
-        formPlacer.innerHTML = saveInner;
-    }
+        ident_btn.disabled = false;
+    };
 });

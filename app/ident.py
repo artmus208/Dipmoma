@@ -31,6 +31,17 @@ def methods():
     method_id = int(data["method_id"])
     # Тут нужно обработать входные данные
     x, y = np.loadtxt(session["last_filepath"], delimiter=',', unpack=True)
+    if method_id == 3:
+        logger.info(f"{data['init_num']}")
+        logger.info(f"{data['init_den']}")
+        return jsonify({
+            'x1':[1,2,3],
+            'y1':[1,3,4],
+            'x2':[1,2,3],
+            'y2':[3,3,3],
+            'error': 0.666,
+            'tf_formula': "$$4$$",
+        })
     ident = IdentifyIt(x, y, degree, method_id)
     y_m = ident.y_m
     x_m = ident.x_m

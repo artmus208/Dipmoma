@@ -103,10 +103,14 @@ degreeElement.addEventListener('change', function (event) {
     }; 
 });
 
+// TIPS Если захочешь сделать так, чтоб ПФ не стиралась после
+// выбоора другого метода из списка. Сделай так, чтоб была какая-то
+// глоабальная переменная-флаг, отражающая факт существования ПФ
 selectElement.addEventListener('change', function (event) {
     var selectedOption = event.target.value;
     if (selectedOption != "3") {
         // Если не выбран градиентный метод, надо убрать форму
+
         formPlacer.innerHTML = "";
         ident_btn.disabled = false;
     };

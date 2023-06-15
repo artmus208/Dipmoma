@@ -11,7 +11,8 @@ import control
 import numpy as np
 import scipy.linalg as linalg
 
-from .grad import Grad
+from .grad import GradientIdentification
+from .rim import rim
 
 class Methods(Enum):
     lsm = 1,
@@ -84,10 +85,14 @@ class IdentifyIt:
 
     @property
     def y_m(self):
-        if self.iscont:
-            self.x_m, self._y_m = control.step_response(self.model, np.linspace(self.x[0], self.x[-1], len(self.x)))
-        else:
+        
+        # TIPS:
+        # тут надо добавить флаг isActive, если оно тру, то надо возвращать step_response
+        # а если false, то forced response
+        if not self.iscont:
             self.x_m, self._y_m = control.step_response(self.model, self.x[-1])
+        else:
+            self.x_m, self._y_m = control.step_response(self.model, np.linspace(self.x[0], self.x[-1], len(self.x)))
         return self._y_m
 
     @property
@@ -103,13 +108,15 @@ class IdentifyIt:
     def __repr__(self) -> str:
         return f"num:{self.num}\ndenum:{self.den}\nerror:{self.error}\nIs cont.:{self.iscont}"
 
-    def __init__(self, x:list, y:list, degree:int, method:int, u:list=None):
+    def __init__(self, x:list, y:list, degree:int, method:int, u:list=None, eps=1e-4):
         self.x = x
         self.y = y
         self.u = u
         self.degree = degree
         self.method = method
         self.iscont = True
+        self.u = u
+        self.eps = eps
         self.run_method()
 
 
@@ -126,6 +133,7 @@ class IdentifyIt:
             self.grad(self.x, self.y, self.degree)
         else:
             raise ValueError("Wrong Method Choosen")
+        print("Method has been worked")
 
     def load_xy(self, file_path):
         """Загрузка экспериментальных данных из файла"""
@@ -140,7 +148,8 @@ class IdentifyIt:
     
 
     def lsm(self, t, y, degree, u=None):
-        if not u: u = np.ones_like(y)
+        if u is None:
+            u = np.ones_like(y)
         N = len(t)
         phi = np.zeros((N-1,2*degree))
         for i in range(N-1):
@@ -168,38 +177,14 @@ class IdentifyIt:
         return [self.num, self.den]
 
 
-    def vim(self, t, y, degree=1):
-        eps = 0.001
-        d_min = -np.log(eps) / t[-1]
-        n = len(y)
-        m = degree * 2
-        d = np.zeros(n)
-        d_max = d_min * 10
-        for i in range(len(d)):
-            d[i] = d_min + i * (d_max - d_min)/len(d)
-        Wd = np.zeros(len(d))
-        for i in range(len(d)):
-            s = 0
-            for j in range(n):
-                s += y[j] * np.exp(-d[i] * t[j]) * 0.01
-            Wd[i] = d[i] * s
-
-        f = np.zeros((n, m), dtype = 'double')
-        for i in range(n):
-            for j in range(1, degree+1):
-                f[i][j-1] = d[i] ** (degree - j)
-            for j in range(1, degree+1):
-                f[i][degree + j - 1] = (-d[i] ** (degree - j + 1)) * Wd[i]
-        
-        f_t = np.transpose(f)
-        left = np.dot(f_t, f)
-        right = np.dot(f_t, Wd)
-        A = linalg.solve(left, right)
-        A = list(A)
-        A.append(1)
-        self.num = A[:degree]
-        self.den = A[degree:]
+    def vim(self, t, y, degree, u=None):
+        rim1 = rim(t, y, degree, self.eps, u=u)
+        self.num = rim1.num.tolist()
+        self.den = rim1.den.tolist()
+        self.iscont = True
         return [self.num, self.den]
+        
+        
 
     def grad(self, t, y, degree=1):
-        g = Grad(t, y, degree)
+        g = GradientIdentification(t, y, degree)

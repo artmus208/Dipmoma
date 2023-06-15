@@ -3,18 +3,18 @@ from control.matlab import *
 import matplotlib.pyplot as plt
 
 
-class Grad():
-    def __init__(self, t, y, degree, KMAX = 100) -> None:
+class GradientIdentification():
+    def __init__(self, filePath, initParams, KMAX = 100) -> None:
         # data load:
-        xx = [np.ones((1, degree + 1))[0], np.ones((1, degree + 1))[0]]
-        xx[0][0] = 1e-6
-        initParams = xx
-        self.t, self.h = t, y
+        self.filePath = filePath
+        self.data = np.loadtxt(filePath, delimiter=',')
+        self.t = self.data[:,0]
+        self.h = self.data[:,1]
         self.size = len(self.h)
         self.state = round(np.mean(self.h[int(0.2*self.size): ]))
         # coeffs load:
-        self.num = initParams[0]
-        self.den = initParams[1]
+        self.num = initParams[ :len(initParams)//2]
+        self.den = initParams[len(initParams)//2: ]
         self.numDim = len(self.num)
         self.denDim = len(self.den)
         self.X = np.concatenate([self.num, self.den])
@@ -47,7 +47,7 @@ class Grad():
         numm, denn = self.MakeCoefs(_X)
         sys_ = tf(numm, denn)
         t = np.linspace(0,self.t[-1],self.size)
-        yM, t = step(sys_,T=t)
+        yM, t = step(sys_, T=t)
         return t, yM 
 
     def I(self,_X):
@@ -111,13 +111,7 @@ class Grad():
         kmax = self.kmax
         k = 0
         epsCurrent = 1
-        while k < kmax:
-        # В этом цикле можно остановится по кол-ву повторений, а можно по
-        # величине относительной ошибки. Второе я убрал.
-        #   было: 
-        #       while k < kmax and epsCurrent > eps:
-        #   стало
-        #       while k < kmax and epsCurrent > eps:
+        while k < kmax and epsCurrent > eps:
             a = -10
             b = 10
             self.J = self.Gradient()
@@ -130,18 +124,11 @@ class Grad():
                     a = max(a, a1)
                     b = min(b,b1)
             step = self.min_fun_split(a,b)
-            tt = np.linspace(a,b,100)
-            yy = np.zeros(100)
-                
-            for j in range(len(tt)):
-                yy[j] = self.f1(tt[j])
                 
             for i in range(len(self.X)):
                 self.X[i] = self.X[i] - step * self.J[i]
 
             epsCurrent = self.I(self.X)/I0
-
-            print("In GetMinimization: ", k)
             k += 1
         
         self.currentEps = epsCurrent
@@ -149,7 +136,7 @@ class Grad():
 
         return self.X
         
-    def Info(self,tM,hM):
+    def Info(self,tM=None, hM=None):
         self.GraphOut([[self.t,self.h,'Задание'],[tM,hM, 'Модель']])
         print('Вычисление завершено за ', self.currentK, ' иттераций')
         print('Ошибка относительно задания ', self.currentEps*100, ' %')
@@ -159,11 +146,14 @@ class Grad():
 
 if __name__ == '__main__':
     print("ЗАПУСК НЕ КАК МОДУЛЯ")
-    x, y = np.loadtxt('test_data/h.txt', delimiter=',', unpack=True)
     k = int(input("Введите максимальное кол-во итераций: "))
     Tparam = 0.05
     xi = 1.0
-    m = Grad(x, y, degree=3, KMAX = k)
+    # Последний коэффициент в числителе д.б. равен установившемуся значению ПХ  
+    numerator = [0.0000001, 0.0000001, 2] # b1 b2 b3
+    # Последний коэффициент в знаменателе д.б. равен одному
+    denumerator = [0.000001, Tparam**2, 2*xi*Tparam, 1] # a0 a1 a2 a3
+    m = GradientIdentification('test_data/h.txt', numerator+denumerator, KMAX = k)
     print(m.num, m.den)
     print("============Start Minim=============")
     coefs = m.GetMinimization()

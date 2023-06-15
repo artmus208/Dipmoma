@@ -2,7 +2,7 @@ import functools
 import os
 import numpy as np
 from flask import (
-    Blueprint, flash, g, jsonify, make_response, redirect, render_template, request, session, url_for
+    Blueprint, Response, flash, g, jsonify, make_response, redirect, render_template, request, session, url_for
 )
 from flask import current_app as app
 from werkzeug.utils import secure_filename
@@ -63,7 +63,7 @@ def upload_file():
         session['last_filepath'] = os.path.join(app.config['UPLOAD_FOLDER'], filename)
 
         flash(f'Файл {filename} успешно загружен!')
-    return redirect(url_for('ident.index'))
+    return redirect(url_for("ident.index"))
 
 def allowed_file(filename):
     return '.' in filename and \

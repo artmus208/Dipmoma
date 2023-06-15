@@ -16,6 +16,7 @@
   <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
   <!-- Мой скрипт -->
   <script defer src="{{ url_for('static', filename='scripts/script.js') }}"></script>  
+  <script defer src="{{ url_for('static', filename='scripts/create_initParam_form.js') }}"></script>  
   <title>Идентификация</title>
 </head>
 
@@ -65,9 +66,6 @@
 
       <div class="control-container">
         <form id='mainForm' class="form ident-form">
-          <label for="tf-pow">Максимальная степень ПФ</label>
-          <input type="number" name="tf-pow" id="tf-pow">
-
           <label for="methods">Метод</label>
           <select name="methods" id="methods">
             <option value="-1"> -- Выберите метод --</option>
@@ -76,8 +74,11 @@
             <option value="3">Градиентный</option>
           </select>
 
+          <label for="tf-pow">Максимальная степень ПФ</label>
+          <input type="number" name="tf-pow" id="tf-pow">
+
           <label for="ident-btn"></label>
-          <input type="submit" value="Идентифицировать">
+          <input class="main-submit-btn" type="submit" value="Идентифицировать">
         </form>
 
         <div id="tf_formula" class="tf-img">

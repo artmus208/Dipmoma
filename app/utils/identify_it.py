@@ -11,7 +11,7 @@ import control
 import numpy as np
 import scipy.linalg as linalg
 
-from grad import Grad
+from .grad import Grad
 
 class Methods(Enum):
     lsm = 1,

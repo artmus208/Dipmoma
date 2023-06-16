@@ -2,6 +2,7 @@
 <html lang="ru">
 
 <head>
+
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -13,6 +14,21 @@
   <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
 
   <!-- Для вывода формул Латех -->
+  <script>
+    MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']],
+        displayMath: [['$$', '$$'], ['\\[', '\\]']],
+        processEscapes: true
+      },
+      svg: {
+        fontCache: 'global'
+      },
+      startup: {
+        typeset: false  // Предотвратить автоматический запуск typeset при загрузке страницы
+      }
+    };
+  </script>
   <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
   <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
   <!-- Мой скрипт -->
@@ -64,10 +80,10 @@
         <!-- Может не вывестись график -->
         <!-- <script src="{{ url_for('static', filename='scripts/script.js') }}"></script> -->
         {% if graphJSON %}
-          <script type='text/javascript'>
-            var graphs = {{ graphJSON | safe}};
-            Plotly.plot('plot', graphs, {});
-          </script>
+        <script type='text/javascript'>
+          var graphs = {{ graphJSON | safe}};
+          Plotly.plot('plot', graphs, {});
+        </script>
         {% endif %}
       </div>
 

@@ -87,7 +87,7 @@ function createInitParamform(degree) {
 ////// Обработчик подтверждения формы ///////////////
     form.addEventListener('submit', function(event) {
         event.preventDefault();
-        ident_btn.toggleAttribute('disabled');
+        ident_btn.disabled=false;
         var buff = 0;
         var num_arr = [];
         var den_arr = [];
@@ -118,7 +118,7 @@ degreeElement.addEventListener('change', function (event) {
         formPlacer.innerHTML = '';
         var initForm = createInitParamform(degreeElement.value);
         formPlacer.appendChild(initForm);
-        ident_btn.toggleAttribute('disabled');
+        ident_btn.disabled=true;
 
     }; 
 });

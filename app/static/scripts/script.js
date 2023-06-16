@@ -1,13 +1,3 @@
-MathJax = {
-  tex: {
-    inlineMath: [['$', '$'], ['\\(', '\\)']],
-    displayMath: [['$$', '$$'], ['\\[', '\\]']],
-    processEscapes: true
-  },
-  svg: {
-    fontCache: 'global'
-  }
-};
 
 var isSpinnerCreate = false;
 var MyPlot = document.getElementById('plot');
@@ -38,9 +28,13 @@ function hideLoadingSpinner() {
 
 document.getElementById('mainForm').addEventListener('submit', function (event) {
   event.preventDefault(); // Предотвращаем отправку формы по умолчанию
-  
-  var layout = { title: "Real-time Data" };
-  var data = [{ x: [], y: [], mode: "lines", line: { color: "#00FF00" } }];
+
+  var layout = { title: "Ожидайте ответа от сервера. \n Вычислительный процесс запущен..." };
+  var data = [{
+    values: [33, 33, 33], // Значения секторов
+    labels: ['Ожидайте', 'ответа', 'от сервера'], // Названия секторов
+    type: 'pie'
+  }];
   Plotly.newPlot('plot', data, layout);
   // Получаем значения полей
   var numberValue = document.getElementById('tf-pow').value;
@@ -107,7 +101,10 @@ document.getElementById('mainForm').addEventListener('submit', function (event) 
 
         let latex_form = document.getElementById('tf_formula');
         latex_form.innerHTML = data.tf_formula
-        MathJax.typesetPromise([latex_form]);
+        MathJax.startup.promise.then(() => {
+          // теперь вы можете использовать MathJax.typesetPromise
+          MathJax.typesetPromise([latex_form])
+        });
 
       });
   } else {
@@ -147,7 +144,10 @@ document.getElementById('mainForm').addEventListener('submit', function (event) 
 
         let latex_form = document.getElementById('tf_formula');
         latex_form.innerHTML = data.tf_formula
-        MathJax.typesetPromise([latex_form]);
+        MathJax.startup.promise.then(() => {
+          // теперь вы можете использовать MathJax.typesetPromise
+          MathJax.typesetPromise([latex_form])
+        });
       })
       .catch(error => {
         console.log(error);

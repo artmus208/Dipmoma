@@ -44,6 +44,21 @@ class IdentifyIt:
         3 - Градиентный метод.
 
     """
+    
+    def __repr__(self) -> str:
+        return f"num:{self.num}\ndenum:{self.den}\nerror:{self.error}\nIs cont.:{self.iscont}"
+
+    def __init__(self, x:list, y:list, degree:int=0, method:int=0, u:list=None, eps=1e-4, init_params=[]):
+        self.x = x
+        self.y = y
+        self.u = u
+        self.degree = degree
+        self.method = method
+        self.iscont = True
+        self.u = u
+        self.eps = eps
+        self.init_params = init_params
+    
     @property
     def method(self):
         return self._method
@@ -104,33 +119,16 @@ class IdentifyIt:
         if isinstance(self.y, np.ndarray) and isinstance(self.y_m, np.ndarray):
             return np.sum((y_m - y)**2)
         raise TypeError("Type mismath")
-
-    def __repr__(self) -> str:
-        return f"num:{self.num}\ndenum:{self.den}\nerror:{self.error}\nIs cont.:{self.iscont}"
-
-    def __init__(self, x:list, y:list, degree:int, method:int, u:list=None, eps=1e-4):
-        self.x = x
-        self.y = y
-        self.u = u
-        self.degree = degree
-        self.method = method
-        self.iscont = True
-        self.u = u
-        self.eps = eps
-        self.run_method()
-
+        
 
     def run_method(self):
         print('Running method...')
         if self.method == 1:
-            print('LSM is runing...')
             self.lsm(self.x, self.y, self.degree, self.u)
         elif self.method == 2:
-            print('VIM is runing...')
             self.vim(self.x, self.y, self.degree)
         elif self.method == 3:
-            print('GRAD is runing...')
-            self.grad(self.x, self.y, self.degree)
+            return GradientIdentification(self.x, self.y, self.init_params)
         else:
             raise ValueError("Wrong Method Choosen")
         print("Method has been worked")
@@ -185,6 +183,4 @@ class IdentifyIt:
         return [self.num, self.den]
         
         
-
-    def grad(self, t, y, degree=1):
-        g = GradientIdentification(t, y, degree)
+        

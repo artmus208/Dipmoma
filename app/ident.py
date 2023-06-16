@@ -31,18 +31,8 @@ def methods():
     method_id = int(data["method_id"])
     # Тут нужно обработать входные данные
     x, y = np.loadtxt(session["last_filepath"], delimiter=',', unpack=True)
-    if method_id == 3:
-        logger.info(f"{data['init_num']}")
-        logger.info(f"{data['init_den']}")
-        return jsonify({
-            'x1':[1,2,3],
-            'y1':[1,3,4],
-            'x2':[1,2,3],
-            'y2':[3,3,3],
-            'error': 0.666,
-            'tf_formula': "$$4$$",
-        })
     ident = IdentifyIt(x, y, degree, method_id)
+    ident.run_method()
     y_m = ident.y_m
     x_m = ident.x_m
     resp_data = {
@@ -55,6 +45,34 @@ def methods():
     }
     return jsonify(resp_data)
 
+
+# Сделать роут специально для градиентного метода
+@bp.route('/grad-handler', methods=("GET", "POST"))
+def grad_handler():
+    data = request.get_json()
+    init_num = list(map(float, data['init_num']))
+    init_den = list(map(float, data['init_den']))
+    session["init_num"] = init_num
+    session["init_den"] = init_den
+    logger.info(f"{session['init_num']}, {session['init_den']}")
+    return Response(status=200)
+    
+@bp.route('/grad-handler-stream', methods=("GET", "POST"))
+def grad_handler_stream():
+    x, y = np.loadtxt(session["last_filepath"], delimiter=',', unpack=True)
+    ident = IdentifyIt(x=x, y=y, method=3, init_params=session["init_num"]+session["init_den"])
+    grad = ident.run_method()
+    return Response(grad.GetMinimization(), mimetype='text/event-stream')
+
+    
+@bp.route('exp-data-viewer', methods=("POST", "GET"))
+def exp_data_viewer():
+    x, y = np.loadtxt(session["last_filepath"], delimiter=',', unpack=True)
+    resp_data = {
+        'x': x.tolist(),
+        'y': y.tolist()
+    }
+    return jsonify(resp_data)
 
 @bp.route('/u', methods=['POST'])
 def upload_file():

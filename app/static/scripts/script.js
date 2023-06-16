@@ -9,6 +9,44 @@ MathJax = {
   }
 };
 
+var isSpinnerCreate = false;
+var MyPlot = document.getElementById('plot');
+
+function showLoadingSpinner() {
+  // Создаем новый div элемент
+  var spinner = document.createElement('div');
+
+  // Добавляем ему класс 'spinner'
+  spinner.className = 'spinner';
+
+  // Добавляем HTML код спиннера
+  spinner.innerHTML = '<div class="loader"></div>';
+
+
+  // Добавляем спиннер на страницу
+  MyPlot.innerHTML = spinner.innerHTML;
+}
+
+function hideLoadingSpinner() {
+  // Находим спиннер на странице
+  var spinner = document.querySelector('.spinner');
+
+  // Удаляем спиннер
+  if (spinner) document.body.removeChild(spinner);
+}
+
+
+
+function toggleSpinner() {
+  if (isSpinnerCreate == false) {
+    isSpinnerCreate = true;
+    showLoadingSpinner();
+  } else {
+    hideLoadingSpinner();
+    isSpinnerCreate = false;
+  }
+}
+
 document.getElementById('mainForm').addEventListener('submit', function (event) {
   event.preventDefault(); // Предотвращаем отправку формы по умолчанию
   
@@ -40,11 +78,10 @@ document.getElementById('mainForm').addEventListener('submit', function (event) 
       buff = document.getElementById('a' + i);
       init_den.push(buff.value);
     }
-    console.log(init_num);
-    console.log(init_den);
     data.init_num = init_num;
     data.init_den = init_den;
     // Отправляем данные на сервер
+    toggleSpinner();
     fetch('/ident/grad-handler', {
       method: 'POST',
       headers: {
@@ -74,7 +111,7 @@ document.getElementById('mainForm').addEventListener('submit', function (event) 
             title: 't, c',
           },
         };
-
+        MyPlot.innerHTML = '';
         var plotData = [trace1, trace2];
         Plotly.newPlot('plot', plotData, layout);
 

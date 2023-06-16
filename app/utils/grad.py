@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 
 
 class GradientIdentification():
-    def __init__(self, x, y, initParams, KMAX = 100) -> None:
+    def __init__(self, x, y, initParams, KMAX = 500) -> None:
         # data load:
         self.t = x
         self.h = y
@@ -111,7 +111,7 @@ class GradientIdentification():
         kmax = self.kmax
         k = 0
         epsCurrent = 1
-        while k < kmax and epsCurrent > eps:
+        while k < kmax:
             a = -10
             b = 10
             self.J = self.Gradient()

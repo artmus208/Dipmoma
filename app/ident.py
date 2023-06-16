@@ -1,10 +1,14 @@
 import functools
+import json
 import os
 import numpy as np
 from flask import (
     Blueprint, Response, flash, g, jsonify, make_response, redirect, render_template, request, session, url_for
 )
 from flask import current_app as app
+import plotly.graph_objs as go
+import plotly
+
 from werkzeug.utils import secure_filename
 
 from . import logger
@@ -16,7 +20,39 @@ bp = Blueprint("ident", __name__, url_prefix='/ident')
 
 @bp.route('/')
 def index():
-    return render_template("ident/new_index.html")
+    t, h = None, None
+    if session.get("last_filepath", False):
+        # Переходная характеристика
+        t, h = np.loadtxt(session["last_filepath"], delimiter=',', unpack=True)
+        logger.info(f"{h[0]}")
+    # Произвольный вход в звено
+    u = session.get('u', None)
+    t_u = session.get('t_u', None)
+    # Произвольный выход звена
+    y = session.get('u', None)
+    t_y = session.get('t_u', None)
+    graphJSON = None
+    if h is not None:
+        fig = go.Figure()
+        fig.add_trace(go.Scatter(x=t, y=h, name="Исходная переходная характеристика объекта"))
+        fig.update_layout(margin=dict(l=5, r=5, t=40, b=5),
+                width=865,  # Ширина графика в пикселях
+                height=375,
+                title="Исходная переходная характеристика объекта",
+                xaxis_title="t, c",
+                yaxis_title="h(t)")
+        graphJSON = json.dumps(fig, cls=plotly.utils.PlotlyJSONEncoder)
+    elif u is not None:
+        fig = go.Figure()
+        fig.add_trace(go.Scatter(x=t_u, y=u, name="Входные значения"))
+        fig.add_trace(go.Scatter(x=t_y, y=y, name="Выходные значения"))
+        fig.update_layout(margin=dict(l=5, r=5, t=40, b=5),
+                width=865,  # Ширина графика в пикселях
+                height=375,
+                title="Произвольный вход/выход",
+                xaxis_title="t, c",)
+        graphJSON = json.dumps(fig, cls=plotly.utils.PlotlyJSONEncoder)
+    return render_template("ident/new_index.html", graphJSON=graphJSON)
 
 
 @bp.route('/handler', methods=("GET", "POST"))
@@ -53,7 +89,6 @@ def grad_handler():
     init_num = list(map(float, data['init_num']))
     init_den = list(map(float, data['init_den']))
     iter_count = int(data['iter_count'])
-    logger.info(f"{session['init_num']}, {session['init_den']}")
     
     x, y = np.loadtxt(session["last_filepath"], delimiter=',', unpack=True)
     ident = IdentifyIt(x=x, y=y, method=3, init_params=init_num+init_den, max_iter=iter_count)
@@ -61,7 +96,6 @@ def grad_handler():
     coefs = grad.GetMinimization()
     
     model = grad.MakeModel(coefs)
-    logger.info(f"{model._repr_latex_()}")
     x_m, y_m = grad.StepResponseData(coefs)
     resp_data = {
         'x1':x.tolist(),

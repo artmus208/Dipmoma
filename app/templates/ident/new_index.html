@@ -16,8 +16,8 @@
   <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
   <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
   <!-- Мой скрипт -->
-  <script defer src="{{ url_for('static', filename='scripts/script.js') }}"></script>  
-  <script defer src="{{ url_for('static', filename='scripts/create_initParam_form.js') }}"></script>  
+  <script defer src="{{ url_for('static', filename='scripts/script.js') }}"></script>
+  <script defer src="{{ url_for('static', filename='scripts/create_initParam_form.js') }}"></script>
   <title>Идентификация</title>
 </head>
 
@@ -31,7 +31,7 @@
       <ul>
         <li><a href="/etc">etc</a></li>
         <li><a href="/reset">reset</a></li>
-        <li><a href="/logout">logout</a></li>
+        <li><a href="{{url_for('auth.logout')}}">logout</a></li>
       </ul>
     </nav>
   </header>
@@ -63,6 +63,12 @@
       <div id="plot" class="plot">
         <!-- Может не вывестись график -->
         <!-- <script src="{{ url_for('static', filename='scripts/script.js') }}"></script> -->
+        {% if graphJSON %}
+          <script type='text/javascript'>
+            var graphs = {{ graphJSON | safe}};
+            Plotly.plot('plot', graphs, {});
+          </script>
+        {% endif %}
       </div>
 
       <div class="control-container">

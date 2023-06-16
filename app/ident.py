@@ -52,17 +52,26 @@ def grad_handler():
     data = request.get_json()
     init_num = list(map(float, data['init_num']))
     init_den = list(map(float, data['init_den']))
-    session["init_num"] = init_num
-    session["init_den"] = init_den
     logger.info(f"{session['init_num']}, {session['init_den']}")
-    return Response(status=200)
     
-@bp.route('/grad-handler-stream', methods=("GET", "POST"))
-def grad_handler_stream():
     x, y = np.loadtxt(session["last_filepath"], delimiter=',', unpack=True)
-    ident = IdentifyIt(x=x, y=y, method=3, init_params=session["init_num"]+session["init_den"])
+    ident = IdentifyIt(x=x, y=y, method=3, init_params=init_num+init_den)
     grad = ident.run_method()
-    return Response(grad.GetMinimization(), mimetype='text/event-stream')
+    coefs = grad.GetMinimization()
+    
+    model = grad.MakeModel(coefs)
+    logger.info(f"{model._repr_latex_()}")
+    x_m, y_m = grad.StepResponseData(coefs)
+    resp_data = {
+        'x1':x.tolist(),
+        'y1':y.tolist(),
+        'x2':x_m.tolist(),
+        'y2':y_m.tolist(),
+        'error': float(grad.I(coefs)),
+        'tf_formula': model._repr_latex_(),
+    }
+    return jsonify(resp_data)
+    
 
     
 @bp.route('exp-data-viewer', methods=("POST", "GET"))

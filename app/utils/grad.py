@@ -1,19 +1,18 @@
-import json
 import numpy as np
 from control.matlab import *
 import matplotlib.pyplot as plt
 
 
 class GradientIdentification():
-    def __init__(self, x, y, init_params, KMAX = 100) -> None:
+    def __init__(self, x, y, initParams, KMAX = 100) -> None:
         # data load:
         self.t = x
         self.h = y
         self.size = len(self.h)
         self.state = round(np.mean(self.h[int(0.2*self.size): ]))
         # coeffs load:
-        self.num = init_params[ :len(init_params)//2]
-        self.den = init_params[len(init_params)//2: ]
+        self.num = initParams[ :len(initParams)//2]
+        self.den = initParams[len(initParams)//2: ]
         self.numDim = len(self.num)
         self.denDim = len(self.den)
         self.X = np.concatenate([self.num, self.den])
@@ -22,7 +21,6 @@ class GradientIdentification():
         self.kmax = KMAX
         self.currentK = None
         self.currentEps = None
-        self.k = 0
 
     def GraphOut(self,graphs,title='График',filename = 'График', name='untitled', folder = ''):
         plt.figure(1)
@@ -42,14 +40,15 @@ class GradientIdentification():
         for i in range(self.denDim):
             d[i] = _X[self.numDim + i]
         return n, d
-
+    
     def MakeModel(self, _X):
         numm, denn = self.MakeCoefs(_X)
         sys_ = tf(numm, denn)
-        return sys_        
+        return sys_
 
     def StepResponseData(self, _X):
-        sys_ = self.MakeModel(_X)
+        numm, denn = self.MakeCoefs(_X)
+        sys_ = tf(numm, denn)
         t = np.linspace(0,self.t[-1],self.size)
         yM, t = step(sys_, T=t)
         return t, yM 
@@ -110,40 +109,32 @@ class GradientIdentification():
         I0 = self.I(self.X)
         eps = 0.001 * I0
         kmax = self.kmax
+        k = 0
         epsCurrent = 1
-        a = -10
-        b = 10 
-        self.J = self.Gradient()
-        for i in range(len(self.X)):
-            if self.J[i] != 0:
-                alf1 = -self.X[i] / self.J[i]
-                alf2 = 0.5 * self.X[i]/self.J[i]
-                a1 = min(alf1, alf2)
-                b1 = max(alf1, alf2)
-                a = max(a, a1)
-                b = min(b,b1)
-        step = self.min_fun_split(a,b)
-        
-        self.X = self.X - step * self.J
-        epsCurrent = self.I(self.X)/I0
-        self.k += 1
-        self.currentEps = epsCurrent
-        
-        x2, y2 = self.StepResponseData(self.X)
-        error = self.I(self.X)
-        model = self.MakeModel(self.X)
+        while k < kmax and epsCurrent > eps:
+            a = -10
+            b = 10
+            self.J = self.Gradient()
+            for i in range(len(self.X)):
+                if self.J[i] != 0:
+                    alf1 = -self.X[i] / self.J[i]
+                    alf2 = 0.5 * self.X[i]/self.J[i]
+                    a1 = min(alf1, alf2)
+                    b1 = max(alf1, alf2)
+                    a = max(a, a1)
+                    b = min(b,b1)
+            step = self.min_fun_split(a,b)
                 
-        data = {
-            'x2': x2.tolist(),
-            'y2': y2.tolist(),
-            'error': error,
-            'tf_formula': model._repr_latex_()
-        }
+            for i in range(len(self.X)):
+                self.X[i] = self.X[i] - step * self.J[i]
+
+            epsCurrent = self.I(self.X)/I0
+            k += 1
         
-        if self.k > self.kmax:
-            return
-        
-        yield 'data: {}\n\n'.format(json.dumps(data))
+        self.currentEps = epsCurrent
+        self.currentK = k
+
+        return self.X
         
     def Info(self,tM=None, hM=None):
         self.GraphOut([[self.t,self.h,'Задание'],[tM,hM, 'Модель']])
@@ -155,8 +146,6 @@ class GradientIdentification():
 
 if __name__ == '__main__':
     print("ЗАПУСК НЕ КАК МОДУЛЯ")
-    file_path = "test_data/time_value.txt"
-    x, y = np.loadtxt(file_path, delimiter=',', unpack=True)
     k = int(input("Введите максимальное кол-во итераций: "))
     Tparam = 0.05
     xi = 1.0
@@ -164,15 +153,13 @@ if __name__ == '__main__':
     numerator = [0.0000001, 0.0000001, 2] # b1 b2 b3
     # Последний коэффициент в знаменателе д.б. равен одному
     denumerator = [0.000001, Tparam**2, 2*xi*Tparam, 1] # a0 a1 a2 a3
-    
+    x, y = np.loadtxt("test_data/h.txt", delimiter=',', unpack=True)
     m = GradientIdentification(x, y, numerator+denumerator, KMAX = k)
     print(m.num, m.den)
     print("============Start Minim=============")
-    for i in range(k):
-        next(m.GetMinimization())
-    coeffs = next(m.GetMinimization())
-    t,y = m.StepResponseData(coeffs)
-    # m.Info(t, y)
+    coefs = m.GetMinimization()
+    t,y = m.StepResponseData(coefs)
+    m.Info(t, y)
 
 
 

@@ -36,17 +36,6 @@ function hideLoadingSpinner() {
 }
 
 
-
-function toggleSpinner() {
-  if (isSpinnerCreate == false) {
-    isSpinnerCreate = true;
-    showLoadingSpinner();
-  } else {
-    hideLoadingSpinner();
-    isSpinnerCreate = false;
-  }
-}
-
 document.getElementById('mainForm').addEventListener('submit', function (event) {
   event.preventDefault(); // Предотвращаем отправку формы по умолчанию
   
@@ -80,8 +69,9 @@ document.getElementById('mainForm').addEventListener('submit', function (event) 
     }
     data.init_num = init_num;
     data.init_den = init_den;
+    data.iter_count = document.getElementById('iter_count').value;
     // Отправляем данные на сервер
-    toggleSpinner();
+    showLoadingSpinner();
     fetch('/ident/grad-handler', {
       method: 'POST',
       headers: {

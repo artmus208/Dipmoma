@@ -48,7 +48,7 @@ class IdentifyIt:
     def __repr__(self) -> str:
         return f"num:{self.num}\ndenum:{self.den}\nerror:{self.error}\nIs cont.:{self.iscont}"
 
-    def __init__(self, x:list, y:list, degree:int=0, method:int=0, u:list=None, eps=1e-4, init_params=[]):
+    def __init__(self, x:list, y:list, degree:int=0, method:int=0, u:list=None, eps=1e-4, init_params=[], max_iter=100):
         self.x = x
         self.y = y
         self.u = u
@@ -58,6 +58,7 @@ class IdentifyIt:
         self.u = u
         self.eps = eps
         self.init_params = init_params
+        self.max_iter = max_iter
     
     @property
     def method(self):
@@ -128,7 +129,7 @@ class IdentifyIt:
         elif self.method == 2:
             self.vim(self.x, self.y, self.degree)
         elif self.method == 3:
-            return GradientIdentification(self.x, self.y, self.init_params)
+            return GradientIdentification(self.x, self.y, self.init_params, self.max_iter)
         else:
             raise ValueError("Wrong Method Choosen")
         print("Method has been worked")

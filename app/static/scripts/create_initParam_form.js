@@ -19,6 +19,20 @@ function createInitInput(i, placeholder) {
     return numInput;
 }
 
+function createIterCount() {
+    var iter_count = document.createElement('input');
+    iter_count.placeholder = 'Кол-во итераций';
+    iter_count.type = "number";
+    iter_count.min = "0";
+    iter_count.max = "1000";
+    iter_count.required = true;
+    iter_count.id = "iter_count";
+    iter_count.style.padding = "2px";
+    iter_count.style.marginTop = "5px";
+    iter_count.style.maxWidth = "140px";
+    return iter_count;
+}
+
 function createInitParamform(degree) {
     var form = document.createElement('form');
     form.className = "flex-container-tf-init";
@@ -53,6 +67,7 @@ function createInitParamform(degree) {
         }
         denumerator.appendChild(denumInput);
     }
+    var iter_count = createIterCount();
 
     var label = document.createElement('p');
     label.innerHTML = "Начальные параметры:"
@@ -61,7 +76,12 @@ function createInitParamform(degree) {
     form.appendChild(numerator);
     form.appendChild(hr);
     form.appendChild(denumerator);
-    form.appendChild(submit_btn);
+    var iter_count_btn_container = document.createElement('div');
+    iter_count_btn_container.style.display = 'flex';
+    iter_count_btn_container.style.justifyContent = 'space-between';
+    iter_count_btn_container.appendChild(iter_count);
+    iter_count_btn_container.appendChild(submit_btn);
+    form.appendChild(iter_count_btn_container);
 
 
 ////// Обработчик подтверждения формы ///////////////

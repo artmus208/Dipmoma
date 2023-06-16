@@ -40,7 +40,7 @@ def methods():
         'y1':y.tolist(),
         'x2':x_m.tolist(),
         'y2':y_m.tolist(),
-        'error': float(ident.error),
+        'error': round(float(ident.error), 3),
         'tf_formula': ident.model._repr_latex_(),
     }
     return jsonify(resp_data)
@@ -52,10 +52,11 @@ def grad_handler():
     data = request.get_json()
     init_num = list(map(float, data['init_num']))
     init_den = list(map(float, data['init_den']))
+    iter_count = int(data['iter_count'])
     logger.info(f"{session['init_num']}, {session['init_den']}")
     
     x, y = np.loadtxt(session["last_filepath"], delimiter=',', unpack=True)
-    ident = IdentifyIt(x=x, y=y, method=3, init_params=init_num+init_den)
+    ident = IdentifyIt(x=x, y=y, method=3, init_params=init_num+init_den, max_iter=iter_count)
     grad = ident.run_method()
     coefs = grad.GetMinimization()
     
@@ -67,7 +68,7 @@ def grad_handler():
         'y1':y.tolist(),
         'x2':x_m.tolist(),
         'y2':y_m.tolist(),
-        'error': float(grad.I(coefs)),
+        'error': round(float(grad.I(coefs)), 3),
         'tf_formula': model._repr_latex_(),
     }
     return jsonify(resp_data)
